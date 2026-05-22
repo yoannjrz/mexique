@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Yucatán 26">
+<meta name="theme-color" content="#1A6B5C">
+<title>Yucatán 2026 ✈</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.0.0/dist/tabler-icons.min.css">
+<style>
+:root{--p:#1A6B5C;--pl:#E8F5F1;--pd:#0F4A3E;--a:#D4622A;--al:#FCF0EB;--bg:#F0F2F5;--card:#fff;--tx:#1C1C1E;--t2:#6E6E73;--t3:#AEAEB2;--br:#E5E5EA;--rd:#FF3B30;--rl:#FFF3F2;--tab:56px;--safe:env(safe-area-inset-bottom,0px);--top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--tx);font-size:15px;line-height:1.5}
+#app{display:flex;flex-direction:column;height:100vh;padding-top:var(--top)}
+header{background:var(--p);color:#fff;padding:10px 16px 9px;flex-shrink:0}
+.ht{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.hs{font-size:11px;opacity:.72;margin-top:1px}
+.hbadge{background:rgba(255,255,255,.22);border-radius:12px;padding:3px 10px;font-size:12px;font-weight:700}
+.hbadge2{background:rgba(255,255,255,.12);border-radius:12px;padding:3px 9px;font-size:11px}
+main{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.sec{display:none;padding:12px}
+.sec.on{display:block}
+#s-ma{padding:12px}
+nav{background:var(--card);border-top:.5px solid var(--br);padding-bottom:var(--safe);flex-shrink:0;display:flex;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+.nt{flex:1;min-width:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5px 2px;border:none;background:transparent;color:var(--t3);font-family:inherit;cursor:pointer;min-height:var(--tab)}
+.nt.on{color:var(--p)}
+.nt .ti{font-size:22px}
+.nt-l{font-size:10px;font-weight:500;margin-top:1px}
+.card{background:var(--card);border-radius:14px;padding:14px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.bdg{display:inline-flex;align-items:center;font-size:11px;padding:3px 9px;border-radius:10px;font-weight:600}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:9px 15px;border-radius:10px;border:none;font-family:inherit;font-size:14px;font-weight:500;cursor:pointer}
+.sm{padding:7px 11px;font-size:13px}
+.bp{background:var(--p);color:#fff}
+.bg2{background:var(--pl);color:var(--p)}
+.br2{background:var(--rl);color:var(--rd)}
+.bo{background:rgba(0,0,0,.07);color:var(--t2)}
+.ba2{background:#E8F5F1;color:#0F4A3E}
+.lk{display:inline-flex;align-items:center;gap:4px;font-size:12px;padding:5px 10px;border-radius:8px;background:var(--pl);color:var(--p);text-decoration:none;margin:3px 3px 0 0}
+.chip{display:inline-block;background:var(--bg);border-radius:8px;padding:4px 10px;font-size:12px;margin:2px 2px 0 0;color:var(--tx)}
+.tr2{display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:13px;color:var(--t2)}
+.inf{background:var(--pl);border-radius:10px;padding:10px 12px;font-size:13px;color:var(--pd);margin-bottom:10px}
+.warn{background:var(--rl);border-radius:10px;padding:10px 12px;font-size:13px;color:#B71C1C;margin-bottom:10px}
+.sep{height:.5px;background:var(--br);margin:12px 0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.mt{background:var(--pl);border-radius:12px;padding:14px}
+.mt-lbl{font-size:12px;color:var(--pd);margin-bottom:3px}
+.mt-val{font-size:22px;font-weight:700;color:var(--p)}
+.mt-sub{font-size:11px;color:var(--pd);opacity:.7;margin-top:1px}
+.brow{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:.5px solid var(--br);gap:10px}
+.brow:last-child{border-bottom:none}
+.brow-l{flex:1}
+.brow-label{font-size:14px;font-weight:500;color:var(--tx)}
+.brow-note{font-size:11px;color:var(--t2);margin-top:1px}
+.brow-input{width:90px;text-align:right;font-size:15px;font-weight:600;color:var(--p);border:1.5px solid var(--br);border-radius:8px;padding:6px 8px;background:var(--bg);font-family:inherit;-webkit-appearance:none}
+.brow-input:focus{border-color:var(--p);outline:none}
+.cr{display:flex;align-items:flex-start;gap:10px;padding:9px 0;border-bottom:.5px solid var(--br)}
+.cr:last-child{border-bottom:none}
+.cr input[type=checkbox]{width:20px;height:20px;flex-shrink:0;accent-color:var(--p);margin-top:2px;cursor:pointer}
+.cr-txt{flex:1;font-size:14px;line-height:1.4;cursor:pointer}
+.cr-del{background:none;border:none;cursor:pointer;color:var(--t3);font-size:20px;padding:0;flex-shrink:0;display:flex;align-items:center}
+.dk{text-decoration:line-through;color:var(--t3)}
+.del-box{background:var(--rl);border-radius:14px;padding:12px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.pbar{height:6px;background:var(--br);border-radius:3px;overflow:hidden;margin-top:6px}
+.pfill{height:100%;background:var(--p);border-radius:3px;transition:width .3s}
+.vol-row{display:flex;align-items:center;gap:10px;padding:12px 0;border-bottom:.5px solid var(--br)}
+.vol-row:last-child{border-bottom:none}
+.vol-icon{width:36px;height:36px;background:var(--pl);border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--p);font-size:18px}
+.vol-label{font-size:12px;color:var(--t2);margin-bottom:2px}
+.vol-val{font-size:15px;font-weight:500;color:var(--tx)}
+/* Panels */
+.panel{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);will-change:transform}
+.panel.open{transform:translateY(0)}
+.phdr{background:var(--card);border-bottom:.5px solid var(--br);padding:11px 14px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex-shrink:0}
+.phdr-t{font-weight:600;font-size:15px;text-align:center;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pbody{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px;padding-bottom:40px}
+.fl{display:block;font-size:12px;color:var(--t2);margin-bottom:4px;margin-top:14px;font-weight:500}
+.fi{width:100%;font-size:15px;padding:11px 13px;border:1.5px solid var(--br);border-radius:10px;background:var(--card);color:var(--tx);font-family:inherit;-webkit-appearance:none;outline:none}
+.fi:focus{border-color:var(--p)}
+textarea.fi{resize:vertical;min-height:80px;line-height:1.5}
+.fi-help{font-size:11px;color:var(--t3);margin-top:3px}
+.hbox{border:1px solid var(--br);border-radius:12px;padding:12px;margin-top:10px}
+.hbox-t{font-size:13px;font-weight:600;color:var(--t2);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+#lmap{height:360px;border-radius:12px;margin-bottom:6px}
+/* Add item row */
+.add-row{display:flex;gap:8px;margin-top:10px}
+.add-row .fi{flex:1;padding:9px 12px;font-size:14px}
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px">
+      <div>
+        <div class="ht">Yucatán 2026 ✈</div>
+        <div class="hs" id="hds">Chargement...</div>
+      </div>
+      <div style="display:flex;gap:5px;align-items:center;padding-top:2px;flex-shrink:0">
+        <span class="hbadge" id="jcd">J-???</span>
+        <span class="hbadge2" id="hdates">15–29 nov.</span>
+      </div>
+    </div>
+  </header>
+  <main id="mn">
+    <div id="s-vo" class="sec on"></div>
+    <div id="s-it" class="sec"></div>
+    <div id="s-ma" class="sec"><div id="lmap"></div><p style="font-size:11px;color:var(--t3);text-align:center;padding:0 12px">Carte interactive · Cliquez sur un marqueur pour les détails · Mise à jour automatique</p></div>
+    <div id="s-hb" class="sec"></div>
+    <div id="s-bu" class="sec"></div>
+    <div id="s-ga" class="sec"></div>
+    <div id="s-ch" class="sec"></div>
+    <div id="s-pr" class="sec"></div>
+  </main>
+  <nav id="nav"></nav>
+</div>
+
+<!-- Panel : Journée -->
+<div id="pd" class="panel">
+  <div class="phdr">
+    <button class="btn bo sm" onclick="cp('d')"><i class="ti ti-x"></i></button>
+    <span class="phdr-t" id="pd-t">Modifier</span>
+    <button class="btn bp sm" onclick="svDay()"><i class="ti ti-check"></i> OK</button>
+  </div>
+  <div class="pbody" id="pd-b"></div>
+</div>
+
+<!-- Panel : Hébergement -->
+<div id="ph" class="panel">
+  <div class="phdr">
+    <button class="btn bo sm" onclick="cp('h')"><i class="ti ti-x"></i></button>
+    <span class="phdr-t">Hébergement</span>
+    <button class="btn bp sm" onclick="svHotel()"><i class="ti ti-check"></i> OK</button>
+  </div>
+  <div class="pbody" id="ph-b"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+// ===== UTILS =====
+function uid(){return Math.random().toString(36).slice(2,9)}
+function e(s){return s?String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'):''}
+function fmtDate(dt){
+  const dn=['Dim.','Lun.','Mar.','Mer.','Jeu.','Ven.','Sam.'];
+  const mn=['jan.','fév.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+  return dn[dt.getDay()]+' '+dt.getDate()+' '+mn[dt.getMonth()];
+}
+function parseDate(str){const[y,m,d]=str.split('-').map(Number);return new Date(y,m-1,d);}
+function cd(dateStr){
+  const dep=parseDate(dateStr||'2026-11-15');
+  const now=new Date();now.setHours(0,0,0,0);
+  const d=Math.ceil((dep-now)/86400000);
+  return d>0?'J-'+d:d===0?'Auj.!':'Parti ✓';
+}
+
+// ===== DONNÉES PAR DÉFAUT =====
+const TC={blue:'#B5D4F4',teal:'#9FE1CB',purple:'#CECBF6',pink:'#F4C0D1',amber:'#FAC775',coral:'#F5C4B3',green:'#C0DD97',gray:'#D3D1C7'};
+const TT={blue:'#0C447C',teal:'#085041',purple:'#3C3489',pink:'#72243E',amber:'#633806',coral:'#712B13',green:'#27500A',gray:'#444441'};
+const COLS=['blue','teal','purple','pink','amber','coral','green','gray'];
+
+const DEF_DAYS=[
+{n:1,to:'Cancún',from:null,km:0,tag:'Arrivée',c:'blue',lat:21.1619,lng:-86.8515,
+ hl:['Récupération du véhicule à l\'aéroport','Check-in hôtel en centro historico','Premier dîner au Mercado 28'],
+ ti:['Filmez le véhicule complet 360° avant de quitter le loueur','DAB Bancomer/BBVA à l\'aéroport — meilleur taux','Évitez la Zona Hotelera, dormez en centro (3× moins cher)','Activez votre eSIM dès l\'atterrissage'],
+ fd:'Mercado 28 : panuchos, salbutes, tacos — 2 à 4€/pers',
+ sl:'Hotel El Rey del Caribe ou Nomads Hotel (centro)',
+ lk:[['El Rey del Caribe','https://maps.google.com/?q=Hotel+El+Rey+del+Caribe+Cancun'],['Airbnb Cancún','https://www.airbnb.fr/s/Canc%C3%BAn--Mexique/homes']]},
+{n:2,to:'Isla Holbox',from:'Cancún',km:145,tag:'Île',c:'teal',lat:21.5244,lng:-87.3767,
+ hl:['Route Cancún → Chiquilá (~2h)','Parking sécurisé Chiquilá (~150 MXN/j)','Ferry Holbox (15 min, ~200 MXN/pers)','Voiturette de golf à la descente du ferry'],
+ ti:['Parking Chiquilá : négociez 2 jours à l\'avance','Pas de DAB fiable sur l\'île — amenez des pesos cash','Voiturette de golf : 350-500 MXN/jour'],
+ fd:'Tacos de langosta, tikin xic (poisson mariné achiote)',
+ sl:'Casa Iguana (~75€) · Casa Las Tortugas · Hotel Mawimbi',
+ lk:[['Ferry Holbox','https://maps.google.com/?q=Puerto+Chiquila'],['Airbnb Holbox','https://www.airbnb.fr/s/Isla-Holbox--Mexique/homes']]},
+{n:3,to:'Holbox',from:null,km:0,tag:'Nature',c:'teal',lat:21.527,lng:-87.372,
+ hl:['Lever soleil à Punta Mosquito (flamants roses dès 6h)','Balade en voiturette autour de l\'île','Excursion bateau : mangroves + îlots'],
+ ti:['6h00 → Punta Mosquito : flamants actifs avant 9h30','Excursion bateau ~400 MXN/pers, négociez sur la plage','Novembre = pas de requins-baleines'],
+ fd:'Ceviche de poulpe, smoothies tropicaux. Bar La Palapa le soir.',
+ sl:'Holbox (2ème nuit)',
+ lk:[['Punta Mosquito','https://maps.google.com/?q=Punta+Mosquito+Holbox']]},
+{n:4,to:'Valladolid',from:'Holbox',km:200,tag:'Maya',c:'purple',lat:20.6897,lng:-88.2022,
+ hl:['Ferry retour le matin','Ek Balam : ascension Acropole 42m !','Cenote X\'Canche à vélo (~50 MXN)','Arrivée Valladolid — longaniza au marché'],
+ ti:['Ek Balam : arrivez à 8h, vue 360° sur la jungle','Entrée Ek Balam ~80 MXN + cenote ~60 MXN','Marché municipal : longaniza + pozol glacé'],
+ fd:'Longaniza de Valladolid au marché municipal + pozol glacé.',
+ sl:'Airbnb La Casita Jabín (~85€, piscine) ou Hacienda del Sol (4,85★)',
+ lk:[['Ek Balam INAH','https://www.inah.gob.mx/zonas/47-zona-arqueologica-de-ek-balam'],['Airbnb Valladolid','https://www.airbnb.fr/s/Valladolid--Yucat%C3%A1n--Mexique/homes']]},
+{n:5,to:'Río Lagartos A/R',from:'Valladolid',km:100,tag:'Flamants',c:'pink',lat:21.5951,lng:-88.1577,
+ hl:['⚠️ DÉPART 6H00 — flamants avant 9h30 seulement','Safari bateau : flamants, crocodiles, ibis (1200-1500 MXN)','Las Coloradas : lacs rose fushia','Retour Valladolid l\'après-midi'],
+ ti:['DÉPART 6H00 IMPÉRATIF — les flamants se dispersent après 9h30','Allez directement au port, ignorez les rabatteurs','Réserve fermée le LUNDI — votre J5 est un jeudi ✓'],
+ fd:'Ceviche de poisson frais sur le port. Dîner à Valladolid.',
+ sl:'Valladolid (2ème nuit)',
+ lk:[['Río Lagartos','https://maps.google.com/?q=Reserva+Biosfera+Ria+Lagartos'],['Las Coloradas','https://maps.google.com/?q=Las+Coloradas+Yucatan']]},
+{n:6,to:'Mérida',from:'Valladolid',km:120,tag:'UNESCO',c:'amber',lat:20.9674,lng:-89.5926,
+ hl:['Chichén Itzá dès 8h00 (avant les cars)','Billets INAH en ligne obligatoires','Cenote Yokdzonot après la visite (~100 MXN)','Arrivée Mérida : Paseo de Montejo + marquesitas'],
+ ti:['Billets en ligne inah.gob.mx : ~18€/pers','Cars de Cancún arrivent à 10h-10h30 — soyez partis avant','Cenote Yokdzonot : cochinita pibil communautaire'],
+ fd:'Yokdzonot : cochinita pibil maison. Mérida : poc chuc, sopa de lima.',
+ sl:'Airbnb maison coloniale avec piscine (~80€) ou Hotel Marionetas',
+ lk:[['Billets Chichén','https://www.inah.gob.mx/zonas/55-zona-arqueologica-de-chichen-itza'],['Airbnb Mérida','https://www.airbnb.fr/s/M%C3%A9rida--Yucat%C3%A1n--Mexique/homes']]},
+{n:7,to:'Mérida',from:null,km:0,tag:'Ville Blanche',c:'coral',lat:20.975,lng:-89.598,
+ hl:['Mercado Lucas de Gálvez : cochinita pibil dès 7h','Cenotes d\'Homún (40 min, 25 cenotes, ~200 MXN)','Dzibilchaltún en option','Marquesitas en soirée'],
+ ti:['Mercado Lucas de Gálvez : ouvert 7h-14h, le meilleur de Mérida','Cenotes Homún : eaux cristallines, quasi aucun touriste étranger','Dzibilchaltún : temple aligné sur les équinoxes (~80 MXN)'],
+ fd:'Matin : cochinita pibil. Midi : poc chuc. Soir : marquesitas.',
+ sl:'Mérida (2ème nuit)',
+ lk:[['Mercado Lucas de Gálvez','https://maps.google.com/?q=Mercado+Lucas+de+Galvez+Merida'],['Cenotes Homún','https://maps.google.com/?q=Homun+cenotes+Yucatan']]},
+{n:8,to:'Campeche',from:'Mérida',km:185,tag:'Puuc',c:'green',lat:19.8301,lng:-90.5349,
+ hl:['Uxmal dès 8h — ascension Pyramide du Devin autorisée !','Architecture Puuc plus raffinée que Chichén','Campeche : remparts UNESCO + pan de cazón au dîner'],
+ ti:['Uxmal ouvre à 8h, ferme à 16h','Ascension Pyramide du Devin autorisée (pas le cas à Chichén)','Coucher de soleil depuis les remparts de Campeche — magique'],
+ fd:'Campeche : pan de cazón (tourteau entre tortillas), camarones al coco.',
+ sl:'Hotel Castelmar centro UNESCO (~90€) ou Airbnb centro (~60€)',
+ lk:[['Uxmal INAH','https://www.inah.gob.mx/zonas/110-zona-arqueologica-de-uxmal'],['Castelmar','https://maps.google.com/?q=Hotel+Castelmar+Campeche']]},
+{n:9,to:'Calakmul',from:'Campeche',km:240,tag:'Jungle',c:'green',lat:18.1059,lng:-89.8102,
+ hl:['Balamkú : fresque maya 16m, unique au monde (gratuit !)','Entrée réserve biosphère (~115 MXN cash)','60 km en forêt dense','Arrivée écolodge AVANT la nuit tombée'],
+ ti:['Partez tôt de Campeche : ~4h de route totale','Balamkú : site gratuit, fresque parfaitement préservée — ne pas manquer','PUERTA CALAKMUL : réservez 2-3 MOIS à l\'avance (15 bungalows !)','Répulsif DEET 30%+ permanent et obligatoire'],
+ fd:'Déjeuner à Xpujil (dernier village). Dîner à l\'écolodge.',
+ sl:'⭐ Puerta Calakmul écolodge (~110€) — RÉSERVEZ MAINTENANT',
+ lk:[['Puerta Calakmul','https://maps.google.com/?q=Puerta+Calakmul+ecolodge'],['Balamkú','https://maps.google.com/?q=Balamku+ruins+Campeche']]},
+{n:10,to:'Bacalar',from:'Calakmul',km:290,tag:'Jungle→Lagune',c:'teal',lat:18.6781,lng:-88.3931,
+ hl:['Calakmul dès 8h : lever soleil sur la canopée depuis Pyramide II','Singes hurleurs, toucans, faune exceptionnelle','Minimum 3h sur le site — ascensions autorisées','Route Calakmul → Bacalar (~3h30)'],
+ ti:['Sommet Pyramide II au lever : canopée infinie — moment INOUBLIABLE','Aucun réseau mobile dans la réserve — cartes offline obligatoires','Bacalar : premier coucher de soleil sur la lagune aux 7 couleurs'],
+ fd:'Petit déj à l\'écolodge. Repas en route. Dîner au bord de la lagune.',
+ sl:'Airbnb Casa Sol y Luna (4,9★/724 avis) ou villa quai privé + kayaks',
+ lk:[['Calakmul','https://maps.google.com/?q=Zona+Arqueologica+Calakmul'],['Airbnb Bacalar','https://www.airbnb.fr/s/Bacalar--Mexique/homes']]},
+{n:11,to:'Bacalar',from:null,km:0,tag:'7 Couleurs',c:'teal',lat:18.692,lng:-88.386,
+ hl:['Sortie bateau : Cocalitos, Canal des Pirates (600-800 MXN)','Cenotes lacustres reliés à la lagune','Muelle Municipal : meilleur spot baignade (entrée libre)','Fort San Felipe au coucher de soleil (gratuit)'],
+ ti:['Ne touchez PAS les stromatolites de Cocalitos — vivants depuis 3,5 milliards d\'ans !','Muelle Municipal : eau translucide, entrée libre, meilleur spot de nage','Kayak/SUP depuis l\'Airbnb si inclus, sinon ~200 MXN/h'],
+ fd:'Mojarras grillées (poisson d\'eau douce local). Bar La Playita le soir.',
+ sl:'Bacalar (2ème nuit)',
+ lk:[['Bateaux Bacalar','https://maps.google.com/?q=Muelle+Bacalar'],['Fort San Felipe','https://maps.google.com/?q=Fuerte+San+Felipe+Bacalar']]},
+{n:12,to:'Tulum',from:'Bacalar',km:225,tag:'Caraïbes',c:'blue',lat:20.2114,lng:-87.4654,
+ hl:['Dernier matin au bord de la lagune','Cobá (déviation 45 min) : pyramide 42m à grimper !','Route Bacalar → Tulum (~2h30)','Plage de Tulum en fin d\'après-midi'],
+ ti:['Cobá : seul grand site où grimper encore une pyramide de 42m','Restez dans le PUEBLO de Tulum — zone hôtelière = 3× plus cher','Tulum plage accessible l\'après-midi depuis le site archéo'],
+ fd:'Déjeuner en route. Tacos al pastor dans le pueblo le soir.',
+ sl:'Airbnb pueblo Tulum avec piscine (~65-80€/nuit, 3 nuits)',
+ lk:[['Cobá INAH','https://www.inah.gob.mx/zonas/26-zona-arqueologica-de-coba'],['Airbnb Tulum','https://www.airbnb.fr/s/Tulum--Mexique/homes']]},
+{n:13,to:'Tulum',from:null,km:0,tag:'Sites & Cenotes',c:'coral',lat:20.218,lng:-87.461,
+ hl:['Site archéo Tulum à 8h00 (avant les cars de croisière à 10h)','Gran Cenote dès 8h : lumière irréelle (~250 MXN)','Cenote Dos Ojos ou Sac Actun : snorkeling souterrain (~350 MXN)','Plage Paraíso l\'après-midi'],
+ ti:['Billets Tulum EN LIGNE sur inah.gob.mx — navette électrique depuis parking déporté','Gran Cenote : le plus photogénique, allez-y dès l\'ouverture','Restaurant Arca ou Hartwood le soir : réservez par email MAINTENANT'],
+ fd:'Cenotes : box repas à emporter. Soir : Arca Tulum (réservez à l\'avance).',
+ sl:'Tulum (2ème nuit)',
+ lk:[['Billets Tulum','https://www.inah.gob.mx/zonas/99-zona-arqueologica-de-tulum'],['Gran Cenote','https://maps.google.com/?q=Gran+Cenote+Tulum'],['Arca Tulum','https://maps.google.com/?q=Arca+restaurant+Tulum']]},
+{n:14,to:'Tulum',from:null,km:0,tag:'Liberté',c:'teal',lat:20.205,lng:-87.47,
+ hl:['Cenote Calavera : saut 3m, peu connu, ~100 MXN','Lagune Kaan Luum : turquoise + vert émeraude (~80 MXN)','Cenotes ejido Macario Gómez (panneaux discrets, ~50-80 MXN)','Dernier coucher de soleil caribéen'],
+ ti:['Cenote Calavera : peu fréquenté, 3 niveaux de saut, ambiance magique','Lagune Kaan Luum : couleurs extraordinaires, baignade possible','Dernier soir : terrasse bord de plage en zone hôtelière — vivez votre Tulum !'],
+ fd:'Brunch dans le pueblo. Dernier dîner face à la Caraïbe.',
+ sl:'Tulum (3ème nuit)',
+ lk:[['Cenote Calavera','https://maps.google.com/?q=Cenote+Calavera+Tulum'],['Kaan Luum','https://maps.google.com/?q=Laguna+Kaan+Luum+Tulum']]},
+{n:15,to:'Cancún ✈',from:'Tulum',km:130,tag:'Retour',c:'gray',lat:21.1619,lng:-86.8515,
+ hl:['Départ Tulum au moins 5h avant le vol','Route Tulum → Cancún (~2h)','Restitution véhicule : comparez photos d\'arrivée','Terminal 4 pour la plupart des vols Europe'],
+ ti:['5h de marge minimum entre Tulum et le décollage — sans exception','Restitution : tour complet avec l\'agent, photos à l\'appui','Achats souvenirs : mezcal Alipús, chocolat Mayordomo, recado rojo'],
+ fd:'Petit déjeuner à Tulum. Restaurant à l\'aéroport si le temps.',
+ sl:'Retour en France 🇫🇷',
+ lk:[['Aéroport Cancún','https://maps.google.com/?q=Cancun+Airport+CUN']]}
+];
+
+const DEF_HOTELS=[
+{stop:'Cancún — J1',n:'1 nuit',h:{nm:'Hotel El Rey del Caribe',pr:'65',wh:'Boutique-hôtel écolo en centro, jardin tropical, réception 24h.',lk:'https://maps.google.com/?q=Hotel+El+Rey+del+Caribe+Cancun'},a:{nm:'Studio centro historico',pr:'50',wh:'Pour 1 nuit d\'arrivée, préférez un hôtel avec réception 24h. Airbnb si check-in autonome confirmé.',lk:'https://www.airbnb.fr/s/Canc%C3%BAn--Mexique/homes'}},
+{stop:'Holbox — J2-J3',n:'2 nuits',h:{nm:'Casa Las Tortugas / Casa Iguana',pr:'88',wh:'Format hôtel dominant sur l\'île. Casa Iguana = meilleur RQP. Casa Las Tortugas = pieds dans l\'eau.',lk:'https://maps.google.com/?q=Casa+Las+Tortugas+Holbox'},a:{nm:'Chambre privée chez l\'habitant',pr:'50',wh:'Quelques Airbnb en chambre privée existent. Moins de services mais bon pour petits budgets.',lk:'https://www.airbnb.fr/s/Isla-Holbox--Mexique/homes'}},
+{stop:'Valladolid — J4-J5',n:'2 nuits',h:{nm:'Hotel Zentik Project',pr:'110',wh:'Hôtel construit autour d\'un cenote privé. Expérience unique à Valladolid.',lk:'https://maps.google.com/?q=Hotel+Zentik+Project+Valladolid'},a:{nm:'La Casita Jabín / Hacienda del Sol',pr:'68',wh:'La Casita Jabín : piscine privée, 10 min du centro. Hacienda del Sol : 4,85★/300+ avis.',lk:'https://www.airbnb.fr/s/Valladolid--Yucat%C3%A1n--Mexique/homes'}},
+{stop:'Mérida — J6-J7',n:'2 nuits',h:{nm:'Hotel Marionetas / Mansión Mérida',pr:'103',wh:'Marionetas : 8 chambres XVIIe, intime. Mansión Mérida : face au Parque Hidalgo, piscine.',lk:'https://maps.google.com/?q=Hotel+Marionetas+Merida'},a:{nm:'Maison coloniale avec piscine',pr:'80',wh:'Haciendas entières avec cour + piscine. Cherchez "casa colonial Merida centro piscina".',lk:'https://www.airbnb.fr/s/M%C3%A9rida--Yucat%C3%A1n--Mexique/homes'}},
+{stop:'Campeche — J8',n:'1 nuit',h:{nm:'Hotel Castelmar',pr:'90',wh:'Dans l\'enceinte historique UNESCO. Hôtel colonial élégant.',lk:'https://maps.google.com/?q=Hotel+Castelmar+Campeche'},a:{nm:'Appartement centro histórico',pr:'58',wh:'Quelques bons Airbnb dans l\'enceinte. Vérifiez le check-in flexible.',lk:'https://www.airbnb.fr/s/San-Francisco-de-Campeche--Mexique/homes'}},
+{stop:'Calakmul — J9',n:'1 nuit',h:{nm:'⭐ Puerta Calakmul (écolodge)',pr:'115',wh:'LA référence. 15 bungalows en jungle à 2km du site. Faune autour des bungalows. RÉSERVEZ MAINTENANT.',lk:'https://maps.google.com/?q=Puerta+Calakmul+ecolodge'},a:{nm:'Chicanná Ecovillage (alternative si complet)',pr:'73',wh:'Pas d\'Airbnb dans cette zone isolée. Si Puerta Calakmul complet, Chicanná à ~35km du site.',lk:'https://maps.google.com/?q=Chicanná+Ecovillage+Resort'}},
+{stop:'Bacalar — J10-J11',n:'2 nuits',h:{nm:'Akalki / Hotel Laguna Bacalar',pr:'103',wh:'Akalki : boutique 8 chambres très prisé, vue directe lagune. Laguna Bacalar : embarcadère privé.',lk:'https://maps.google.com/?q=Akalki+Bacalar'},a:{nm:'⭐ Casa Sol y Luna / Villa quai privé',pr:'85',wh:'Casa Sol y Luna : 4,9★/724 avis, piscine à débordement. Villas avec quai + kayaks inclus.',lk:'https://www.airbnb.fr/s/Bacalar--Mexique/homes'}},
+{stop:'Tulum — J12-J14',n:'3 nuits',h:{nm:'Posada Lamar (pueblo)',pr:'80',wh:'Dans le pueblo de Tulum, piscine, calme, idéal pour rayonner vers cenotes et site archéo.',lk:'https://maps.google.com/?q=Posada+Lamar+Tulum'},a:{nm:'Appartement pueblo avec piscine',pr:'70',wh:'Nombreux Airbnb avec piscine privée sous 80€/nuit dans le pueblo de Tulum. Meilleur RQP du circuit.',lk:'https://www.airbnb.fr/s/Tulum--Mexique/homes'}}
+];
+
+const DEF_BUDGET=[
+{id:'flights',label:'Vols (2 personnes)',icon:'ti-plane',val:1200,note:'Aller + retour × 2 pers · lié à votre vol'},
+{id:'hotels',label:'Hébergements (14 nuits)',icon:'ti-bed',val:1115,note:'Mix Airbnb + hôtels de charme'},
+{id:'car',label:'Location voiture + assurances',icon:'ti-car',val:750,note:'14 jours · CDW full cover + liability'},
+{id:'meals',label:'Repas (2 pers × 15 jours)',icon:'ti-salad',val:750,note:'Marchés locaux + restaurants'},
+{id:'activities',label:'Activités',icon:'ti-swim',val:350,note:'Bateaux, cenotes, excursions'},
+{id:'sites',label:'Entrées sites archéo',icon:'ti-building',val:230,note:'Chichén, Uxmal, Calakmul, Tulum…'},
+{id:'fuel',label:'Carburant',icon:'ti-droplet',val:230,note:'~2 400 km · essence ~0,90€/L'},
+{id:'misc',label:'Divers',icon:'ti-dots',val:185,note:'Ferry, voiturette golf, péages, imprévus'}
+];
+
+const DEF_FLIGHT={date:'2026-11-15',returnDate:'2026-11-29',airline:'',numOut:'',numRet:'',depAirport:'CDG/ORY',arrAirport:'CUN',pricePP:600,notes:''};
+
+const DEF_CHECKLIST=[
+{cat:'Documents',items:[
+{id:uid(),text:'Passeports valides 6+ mois après le 29 nov. 2026',done:false},
+{id:uid(),text:'Permis de conduire INTERNATIONAL (sous-préfecture, ~25€, délai 4-6 semaines)',done:false},
+{id:uid(),text:'Contrat assurance voyage imprimé + copie numérique',done:false},
+{id:uid(),text:'Copies passeports dans Google Drive / iCloud',done:false},
+{id:uid(),text:'Numéro Terra Maya 24h sauvegardé hors connexion : +52 999 481 9576',done:false}
+]},
+{cat:'Santé',items:[
+{id:uid(),text:'Consultation médecin du voyage (hépatite A + typhoïde recommandés)',done:false},
+{id:uid(),text:'DTP à jour',done:false},
+{id:uid(),text:'Répulsif DEET 30%+ acheté (OBLIGATOIRE à Calakmul)',done:false},
+{id:uid(),text:'Crème solaire SPF 50+ (réappliquer toutes les 2h)',done:false},
+{id:uid(),text:'Imodium + Smecta (turista)',done:false},
+{id:uid(),text:'Antihistaminique + trousse premiers secours',done:false}
+]},
+{cat:'Tech & Connectivité',items:[
+{id:uid(),text:'eSIM Airalo ou Holafly commandée (Mexique, 30 Go/30 jours, ~20€)',done:false},
+{id:uid(),text:'Google Maps hors ligne téléchargé — péninsule du Yucatán entière',done:false},
+{id:uid(),text:'Waze installé (topes + radars + checkpoints)',done:false},
+{id:uid(),text:'Batterie externe 10 000+ mAh chargée',done:false},
+{id:uid(),text:'Confirmations hébergements + billets sauvegardés hors connexion',done:false}
+]},
+{cat:'Argent',items:[
+{id:uid(),text:'Carte sans frais de change activée (Revolut / N26 / Boursorama Ultim)',done:false},
+{id:uid(),text:'Banque informée du séjour au Mexique',done:false},
+{id:uid(),text:'Retirer 3000-5000 MXN à Cancún (DAB Bancomer/BBVA)',done:false}
+]},
+{cat:'Réservations hébergements',items:[
+{id:uid(),text:'Cancún J1 — réservé',done:false},
+{id:uid(),text:'Holbox J2-J3 — réservé',done:false},
+{id:uid(),text:'Valladolid J4-J5 — réservé',done:false},
+{id:uid(),text:'Mérida J6-J7 — réservé',done:false},
+{id:uid(),text:'Campeche J8 — réservé',done:false},
+{id:uid(),text:'⚠️ PUERTA CALAKMUL J9 — URGENT (15 bungalows seulement !)',done:false},
+{id:uid(),text:'Bacalar J10-J11 — réservé',done:false},
+{id:uid(),text:'Tulum J12-J14 — réservé',done:false}
+]},
+{cat:'Billets & Restos',items:[
+{id:uid(),text:'Chichén Itzá — billets INAH en ligne (J6)',done:false},
+{id:uid(),text:'Tulum archéo — billets INAH en ligne (J13)',done:false},
+{id:uid(),text:'Uxmal — billets INAH recommandés (J8)',done:false},
+{id:uid(),text:'Restaurant Arca ou Hartwood Tulum — réservation email (J13/14)',done:false}
+]},
+{cat:'Voiture',items:[
+{id:uid(),text:'Location réservée (Hertz/Europcar/Alamo, aéroport Cancún)',done:false},
+{id:uid(),text:'Assurance CDW full cover + Liability confirmée',done:false},
+{id:uid(),text:'Option plein à plein confirmée (refuser le plein prépayé)',done:false}
+]}
+];
+
+const GAST=[
+{city:'Holbox',dishes:['Tacos de langosta (homard pêché du jour)','Tikin xic — poisson mariné achiote, grillé sur feuilles de bananier','Ceviche de poulpe ultra-frais'],where:'Los Pelícanos, Restaurant Roots, La Palapa (soir).'},
+{city:'Valladolid',dishes:['Longaniza de Valladolid — saucisse fumée épicée (marché municipal)','Pozol — boisson maïs fermenté glacée','Sopa de lima — bouillon citron vert + volaille'],where:'Marché municipal (7h-14h), El Bazaar, La Palapita.'},
+{city:'Mérida',dishes:['Cochinita pibil — porc mariné achiote cuit lentement (incontournable)','Poc chuc — tranche de porc marinée citron vert + oignon grillé','Marquesitas — crêpes fromage edam + cajeta (street-food soir)'],where:'Mercado Lucas de Gálvez (matin), Wayan\'e, El Apoala.'},
+{city:'Campeche',dishes:['Pan de cazón — tourteau entre 3 tortillas sauce tomate noire (spécialité absolue)','Camarones al coco — crevettes à la noix de coco'],where:'Marché público de Campeche, La Pigua, Restaurante Marganzo.'},
+{city:'Bacalar',dishes:['Mojarras grillées — poisson d\'eau douce local','Crevettes fraîches + haricots noirs','Limonada con chía'],where:'La Playita, El Manati, restos sur la rive du Muelle.'},
+{city:'Tulum',dishes:['Tacos al pastor (porc + ananas, meilleurs de nuit dans le pueblo)','Ceviche acevichado de pulpo style Tulum'],where:'El Merkadito (marché pueblo), Arca (réservez), Hartwood (réservez).'}
+];
+
+const PRAT=[
+{tl:'Conduite & Sécurité',ic:'ti-car',it:['JAMAIS de nuit — animaux errants, topes invisibles, routes non éclairées. Règle absolue sans exception.','Topes (dos-d\'âne) : ralentissez à chaque entrée/sortie de village même sans panneau','Checkpoints militaires : normaux, 2-3 min, documents en main, restez calmes','GPS : Waze en priorité (topes + radars signalés) + Google Maps offline en backup','Route Calakmul : 60 km étroits en jungle mais goudronnés — OK de jour']},
+{tl:'Assurances & Documents',ic:'ti-shield',it:['Permis international obligatoire pour louer + indispensable en cas d\'accident','Filmez le véhicule 360° à la prise en charge — votre seule preuve en cas de litige','CDW : franchise 500-1500€ sans assurance complément — prenez la full cover','Responsabilité civile tiers (LIAB) : obligatoire légalement au Mexique']},
+{tl:'Téléphone & Connectivité',ic:'ti-wifi',it:['eSIM Airalo : ~20€ pour 30 Go/30 jours — commandez avant le départ','Alternative : SIM Telcel en Oxxo à l\'aéroport (~200 MXN/5Go)','Zone sans réseau : Calakmul (réserve de biosphère) — offline obligatoire','WhatsApp reste votre canal principal avec les logeurs locaux']},
+{tl:'Argent & Paiements',ic:'ti-wallet',it:['Peso mexicain (MXN) : ~1€ = 21-22 MXN (2026)','DAB fiables : Bancomer, BBVA, Santander — évitez les DAB indépendants','Retirez 3000-5000 MXN à la fois pour minimiser les frais','Cash indispensable : Holbox, Río Lagartos, Calakmul, marchés locaux','Pourboire (propina) : 10-15% au restaurant est la norme']},
+{tl:'Urgences',ic:'ti-alert-triangle',it:['Urgences Mexique : 911 (police + pompiers + SAMU, numéro universel)','Ambassade de France : +52 55 9171 9700','Terra Maya assistance FR 24h/24 : +52 999 481 9576 (WhatsApp)','En cas d\'accident : ne bougez pas le véhicule avant la police']}
+];
+
+// ===== STATE =====
+const S={days:null,hotels:null,budget:null,flight:null,checklist:null,
+  editDayN:null,editHotelIdx:null,pendingDel:null};
+
+// ===== STORAGE =====
+function save(){
+  try{
+    localStorage.setItem('yuc26d',JSON.stringify(S.days));
+    localStorage.setItem('yuc26h',JSON.stringify(S.hotels));
+    localStorage.setItem('yuc26b',JSON.stringify(S.budget));
+    localStorage.setItem('yuc26f',JSON.stringify(S.flight));
+    localStorage.setItem('yuc26c',JSON.stringify(S.checklist));
+  }catch(err){}
+}
+function load(){
+  try{const v=localStorage.getItem('yuc26d');if(v)S.days=JSON.parse(v);}catch(e){}
+  try{const v=localStorage.getItem('yuc26h');if(v)S.hotels=JSON.parse(v);}catch(e){}
+  try{const v=localStorage.getItem('yuc26b');if(v)S.budget=JSON.parse(v);}catch(e){}
+  try{const v=localStorage.getItem('yuc26f');if(v)S.flight=JSON.parse(v);}catch(e){}
+  try{const v=localStorage.getItem('yuc26c');if(v)S.checklist=JSON.parse(v);}catch(e){}
+  if(!S.days)S.days=JSON.parse(JSON.stringify(DEF_DAYS));
+  if(!S.hotels)S.hotels=JSON.parse(JSON.stringify(DEF_HOTELS));
+  if(!S.budget)S.budget=JSON.parse(JSON.stringify(DEF_BUDGET));
+  if(!S.flight)S.flight=JSON.parse(JSON.stringify(DEF_FLIGHT));
+  if(!S.checklist)S.checklist=JSON.parse(JSON.stringify(DEF_CHECKLIST));
+}
+function resetAll(){if(confirm('Réinitialiser toutes les données ?')){localStorage.clear();load();rAll();}}
+
+// ===== DATES =====
+function recalcDates(){
+  if(!S.flight||!S.flight.date)return;
+  const base=parseDate(S.flight.date);
+  S.days.forEach((d,i)=>{
+    const dt=new Date(base.getTime());dt.setDate(base.getDate()+i);
+    d.dt=fmtDate(dt);
+  });
+}
+
+// ===== HEADER =====
+function rHdr(){
+  const km=S.days.reduce((s,d)=>s+(d.km||0),0);
+  const dep=S.flight?S.flight.date:'2026-11-15';
+  const ret=S.flight?S.flight.returnDate:'2026-11-29';
+  document.getElementById('hds').textContent=S.days.length+' étapes · ~'+km+' km · 2 voyageurs';
+  document.getElementById('jcd').textContent=cd(dep);
+  const d1=S.days[0]?S.days[0].dt:'';
+  const dn=S.days[S.days.length-1]?S.days[S.days.length-1].dt:'';
+  document.getElementById('hdates').textContent=d1+' – '+dn;
+}
+
+// ===== TABS =====
+const TABS=[['vo','ti-plane','Vol'],['it','ti-calendar','Itinéraire'],['ma','ti-map','Carte'],['hb','ti-bed','Hébergts'],['bu','ti-wallet','Budget'],['ga','ti-star','Gastro'],['ch','ti-checklist','Checklist'],['pr','ti-car','Pratique']];
+function rTabs(){
+  document.getElementById('nav').innerHTML=TABS.map((t,i)=>`<button class="nt${i===0?' on':''}" onclick="sw('${t[0]}',this)"><i class="ti ${t[1]}"></i><span class="nt-l">${t[2]}</span></button>`).join('');
+}
+function sw(id,btn){
+  TABS.forEach(t=>{const el=document.getElementById('s-'+t[0]);if(el)el.className='sec'+(t[0]===id?' on':'');});
+  document.querySelectorAll('.nt').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  if(id==='ma')setTimeout(()=>{iMap();uMap();},80);
+}
+
+// ===== VOL =====
+function rVol(){
+  const f=S.flight;
+  const total2=(f.pricePP||0)*2;
+  document.getElementById('s-vo').innerHTML=`
+  <div style="background:var(--p);border-radius:16px;padding:16px;margin-bottom:12px;color:white">
+    <div style="font-size:13px;opacity:.75;margin-bottom:4px">Prix total des vols (2 personnes)</div>
+    <div style="font-size:32px;font-weight:800">${total2.toLocaleString('fr')} €</div>
+    <div style="font-size:12px;opacity:.65;margin-top:3px">${f.pricePP||0} € × 2 pers</div>
+  </div>
+  <div class="card">
+    <div style="font-weight:600;font-size:15px;margin-bottom:2px">✈️ Vol aller</div>
+    <div class="sep"></div>
+    <div class="vol-row"><div class="vol-icon"><i class="ti ti-calendar"></i></div><div><div class="vol-label">Date de départ</div><div class="vol-val">${f.date||'—'}</div></div></div>
+    <div class="vol-row"><div class="vol-icon"><i class="ti ti-map-pin"></i></div><div><div class="vol-label">Itinéraire</div><div class="vol-val">${e(f.depAirport)||'—'} → ${e(f.arrAirport)||'—'}</div></div></div>
+    <div class="vol-row"><div class="vol-icon"><i class="ti ti-plane"></i></div><div><div class="vol-label">Compagnie · N° vol</div><div class="vol-val">${e(f.airline)||'Non renseigné'}${f.numOut?' · '+e(f.numOut):''}</div></div></div>
+  </div>
+  <div class="card">
+    <div style="font-weight:600;font-size:15px;margin-bottom:2px">✈️ Vol retour</div>
+    <div class="sep"></div>
+    <div class="vol-row"><div class="vol-icon"><i class="ti ti-calendar"></i></div><div><div class="vol-label">Date de retour</div><div class="vol-val">${f.returnDate||'—'}</div></div></div>
+    <div class="vol-row"><div class="vol-icon"><i class="ti ti-hash"></i></div><div><div class="vol-label">N° vol retour</div><div class="vol-val">${e(f.numRet)||'Non renseigné'}</div></div></div>
+  </div>
+  ${f.notes?`<div class="inf">${e(f.notes)}</div>`:''}
+  <div style="margin-bottom:6px;font-size:13px;color:var(--t2)">⚠️ Modifier la date de départ recalcule automatiquement toutes les dates de l'itinéraire.</div>
+  <button class="btn bp" style="width:100%;justify-content:center" onclick="opVol()"><i class="ti ti-edit"></i> Modifier les informations vol</button>
+  `;
+}
+
+let volPanelOpen=false;
+function opVol(){
+  const f=S.flight;
+  const html=`
+  <label class="fl">Date de départ (recalcule tout l'itinéraire)</label>
+  <input class="fi" type="date" id="vd" value="${e(f.date)}" onchange="previewDates(this.value)">
+  <div id="date-preview" class="inf" style="margin-top:6px;font-size:12px"></div>
+  <label class="fl">Date de retour</label>
+  <input class="fi" type="date" id="vr" value="${e(f.returnDate)}">
+  <label class="fl">Compagnie aérienne</label>
+  <input class="fi" id="va" value="${e(f.airline)}" placeholder="Ex: Air France, Transavia...">
+  <label class="fl">N° vol aller</label>
+  <input class="fi" id="vno" value="${e(f.numOut)}" placeholder="Ex: AF1234">
+  <label class="fl">N° vol retour</label>
+  <input class="fi" id="vnr" value="${e(f.numRet)}" placeholder="Ex: AF1235">
+  <label class="fl">Aéroport de départ</label>
+  <input class="fi" id="vda" value="${e(f.depAirport)}" placeholder="Ex: CDG, ORY...">
+  <label class="fl">Aéroport d'arrivée</label>
+  <input class="fi" id="vaa" value="${e(f.arrAirport)}" placeholder="Ex: CUN">
+  <label class="fl">Prix par personne (€) → met à jour le budget</label>
+  <input class="fi" type="number" id="vpp" value="${f.pricePP||0}">
+  <label class="fl">Notes</label>
+  <textarea class="fi" id="vnt" placeholder="Horaires, bagages, code réservation...">${e(f.notes)}</textarea>
+  <div style="height:20px"></div>
+  `;
+  document.getElementById('pd-b').innerHTML=html;
+  document.getElementById('pd-t').textContent='✈️ Informations vol';
+  S._editMode='vol';
+  previewDates(f.date);
+  op('d');
+}
+function previewDates(dateStr){
+  if(!dateStr)return;
+  try{
+    const base=parseDate(dateStr);
+    const last=new Date(base.getTime());last.setDate(base.getDate()+S.days.length-1);
+    document.getElementById('date-preview').textContent='→ Itinéraire du '+fmtDate(base)+' au '+fmtDate(last)+' ('+S.days.length+' jours)';
+  }catch(e){}
+}
+function svVol(){
+  S.flight={
+    date:document.getElementById('vd').value,
+    returnDate:document.getElementById('vr').value,
+    airline:document.getElementById('va').value.trim(),
+    numOut:document.getElementById('vno').value.trim(),
+    numRet:document.getElementById('vnr').value.trim(),
+    depAirport:document.getElementById('vda').value.trim(),
+    arrAirport:document.getElementById('vaa').value.trim(),
+    pricePP:parseFloat(document.getElementById('vpp').value)||0,
+    notes:document.getElementById('vnt').value.trim()
+  };
+  // Update budget flights line
+  const bf=S.budget.find(b=>b.id==='flights');
+  if(bf)bf.val=S.flight.pricePP*2;
+  recalcDates();
+  save();
+  cp('d');
+  rVol();rIt();rHdr();rBu();
+}
+function svDay(){
+  if(S._editMode==='vol'){svVol();return;}
+  const n=S.editDayN;
+  const idx=S.days.findIndex(d=>d.n===n);if(idx<0){cp('d');return;}
+  S.days[idx]={...S.days[idx],
+    to:document.getElementById('dd-to').value.trim(),
+    from:document.getElementById('dd-fr').value.trim()||null,
+    km:parseInt(document.getElementById('dd-km').value)||0,
+    tag:document.getElementById('dd-tg').value.trim(),
+    c:document.getElementById('dd-cl').value,
+    lat:parseFloat(document.getElementById('dd-la').value)||20,
+    lng:parseFloat(document.getElementById('dd-ln').value)||-88,
+    hl:document.getElementById('dd-hl').value.split('\n').map(x=>x.trim()).filter(Boolean),
+    ti:document.getElementById('dd-ti').value.split('\n').map(x=>x.trim()).filter(Boolean),
+    fd:document.getElementById('dd-fd').value.trim(),
+    sl:document.getElementById('dd-sl').value.trim(),
+    lk:document.getElementById('dd-lk').value.split('\n').map(x=>x.trim()).filter(Boolean).map(l=>{const p=l.split('|');return[p[0].trim(),p[1]?p[1].trim():'#'];}),
+  };
+  S.editDayN=null;S._editMode=null;
+  save();cp('d');rIt();rHdr();uMap();
+}
+
+// ===== ITINÉRAIRE =====
+function rIt(){
+  recalcDates();
+  const km=S.days.reduce((s,d)=>s+(d.km||0),0);
+  let h=`<div class="inf" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><span>${S.days.length} étapes · ${km} km au total</span><button class="btn ba2 sm" onclick="addDay()"><i class="ti ti-plus"></i> Ajouter</button></div>`;
+  S.days.forEach(d=>{
+    if(S.pendingDel&&S.pendingDel.type==='day'&&S.pendingDel.id===d.n){
+      h+=`<div class="del-box"><span style="color:#B71C1C;font-size:14px;font-weight:500">Supprimer J${d.n} — ${e(d.to)} ?</span><div style="display:flex;gap:6px"><button class="btn br2 sm" onclick="doDel()"><i class="ti ti-trash"></i> Oui</button><button class="btn bo sm" onclick="S.pendingDel=null;rIt()">Annuler</button></div></div>`;return;
+    }
+    h+=`<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="background:var(--bg);border-radius:10px;padding:5px 10px;text-align:center;min-width:46px;flex-shrink:0">
+            <div style="font-size:17px;font-weight:700;color:var(--p)">J${d.n}</div>
+            <div style="font-size:10px;color:var(--t2)">${e(d.dt||'')}</div>
+          </div>
+          <div>
+            <div style="font-weight:600;font-size:15px">${e(d.to)}${d.km?` <span style="font-size:12px;color:var(--t2);font-weight:400">${d.km} km</span>`:''}</div>
+            ${d.from?`<div style="font-size:12px;color:var(--t2)">depuis ${e(d.from)}</div>`:''}
+          </div>
+        </div>
+        <div style="display:flex;gap:5px;align-items:center;flex-shrink:0">
+          <span class="bdg" style="background:${TC[d.c]||TC.gray};color:${TT[d.c]||TT.gray}">${e(d.tag)}</span>
+          <button class="btn bo sm" onclick="editDay(${d.n})" style="padding:7px 9px"><i class="ti ti-edit"></i></button>
+          <button class="btn br2 sm" onclick="S.pendingDel={type:'day',id:${d.n}};S.editDayN=null;rIt()" style="padding:7px 9px"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>
+      ${(d.hl||[]).length?`<div style="display:flex;flex-wrap:wrap;margin-bottom:8px">${d.hl.map(x=>`<span class="chip">${e(x)}</span>`).join('')}</div>`:''}
+      ${(d.ti||[]).length?`<div style="border-top:.5px solid var(--br);padding-top:6px;margin-bottom:6px">${d.ti.map(t=>`<div class="tr2"><i class="ti ti-info-circle" style="font-size:14px;flex-shrink:0;color:var(--t3)"></i><span>${e(t)}</span></div>`).join('')}</div>`:''}
+      ${d.fd?`<div style="background:var(--bg);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--t2);margin-bottom:6px"><i class="ti ti-star" style="font-size:12px"></i> ${e(d.fd)}</div>`:''}
+      ${(d.lk||[]).length?`<div>${d.lk.map(l=>`<a href="${e(l[1])}" class="lk" target="_blank">${e(l[0])} <i class="ti ti-external-link" style="font-size:10px"></i></a>`).join('')}</div>`:''}
+    </div>`;
+  });
+  document.getElementById('s-it').innerHTML=h;
+}
+function editDay(n){
+  const d=S.days.find(x=>x.n===n);if(!d)return;
+  S.editDayN=n;S._editMode='day';
+  document.getElementById('pd-t').textContent='Modifier J'+n+' — '+d.to;
+  document.getElementById('pd-b').innerHTML=`
+    <div class="g3">
+      <div><label class="fl">Destination</label><input class="fi" id="dd-to" value="${e(d.to)}"></div>
+      <div><label class="fl">Depuis</label><input class="fi" id="dd-fr" value="${e(d.from||'')}"></div>
+      <div><label class="fl">Distance km</label><input class="fi" type="number" id="dd-km" value="${d.km||0}"></div>
+      <div><label class="fl">Étiquette</label><input class="fi" id="dd-tg" value="${e(d.tag)}"></div>
+      <div><label class="fl">Couleur</label><select class="fi" id="dd-cl">${COLS.map(c=>`<option value="${c}"${d.c===c?' selected':''}>${c}</option>`).join('')}</select></div>
+      <div><label class="fl">Latitude</label><input class="fi" type="number" step="0.001" id="dd-la" value="${d.lat||20}"></div>
+      <div><label class="fl">Longitude</label><input class="fi" type="number" step="0.001" id="dd-ln" value="${d.lng||-88}"></div>
+    </div>
+    <label class="fl">Points clés (un par ligne)</label>
+    <textarea class="fi" id="dd-hl" rows="3">${e((d.hl||[]).join('\n'))}</textarea>
+    <label class="fl">Conseils pratiques (un par ligne)</label>
+    <textarea class="fi" id="dd-ti" rows="3">${e((d.ti||[]).join('\n'))}</textarea>
+    <label class="fl">Gastronomie</label>
+    <input class="fi" id="dd-fd" value="${e(d.fd||'')}">
+    <label class="fl">Hébergement (résumé)</label>
+    <input class="fi" id="dd-sl" value="${e(d.sl||'')}">
+    <label class="fl">Liens (Nom|https://url — un par ligne)</label>
+    <textarea class="fi" id="dd-lk" rows="3">${e((d.lk||[]).map(l=>l[0]+'|'+l[1]).join('\n'))}</textarea>
+  `;
+  op('d');
+}
+function addDay(){
+  const mx=Math.max(...S.days.map(d=>d.n),0);
+  const ls=S.days[S.days.length-1];
+  const newN=mx+1;
+  const base=S.flight?parseDate(S.flight.date):new Date('2026-11-15');
+  const dt=new Date(base.getTime());dt.setDate(base.getDate()+mx);
+  S.days.push({n:newN,dt:fmtDate(dt),to:'Nouvelle étape',from:ls?ls.to:null,km:0,tag:'Étape',c:'gray',lat:20,lng:-88,hl:['Point clé'],ti:['Conseil pratique'],fd:'À compléter',sl:'À réserver',lk:[]});
+  save();editDay(newN);
+}
+function doDel(){
+  if(!S.pendingDel)return;
+  if(S.pendingDel.type==='day'){S.days=S.days.filter(d=>d.n!==S.pendingDel.id);S.editDayN=null;}
+  else if(S.pendingDel.type==='hotel'){S.hotels.splice(S.pendingDel.id,1);S.editHotelIdx=null;}
+  S.pendingDel=null;save();rIt();rHb();rHdr();uMap();
+}
+
+// ===== MAP =====
+let lmap=null,rLine=null,mks=[];
+function iMap(){
+  if(lmap||!window.L)return;
+  lmap=L.map('lmap').setView([19.8,-88.8],7);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© <a href="https://www.openstreetmap.org/copyright">OSM</a>',maxZoom:18}).addTo(lmap);
+}
+function uMap(){
+  if(!lmap)return;
+  mks.forEach(m=>m.remove());mks=[];
+  if(rLine){rLine.remove();rLine=null;}
+  const seen={};
+  const OFFS=[[0,0],[0.02,0.025],[-0.02,0.025],[0.025,-0.02],[-0.025,-0.02],[0,0.035]];
+  const pts=S.days.filter(d=>d.lat&&d.lng).map(d=>{
+    const k=Math.round(d.lat*50)+','+Math.round(d.lng*50);
+    seen[k]=(seen[k]||0);const off=OFFS[seen[k]%OFFS.length];seen[k]++;
+    return[d.lat+off[0],d.lng+off[1]];
+  });
+  if(pts.length>1)rLine=L.polyline(pts,{color:'#1A6B5C',weight:3,dashArray:'8,5',opacity:.8}).addTo(lmap);
+  S.days.filter(d=>d.lat&&d.lng).forEach((d,i)=>{
+    const ic=L.divIcon({html:`<div style="background:#1A6B5C;color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;border:2.5px solid white;box-shadow:0 2px 6px rgba(0,0,0,.35);font-family:sans-serif;">${d.n}</div>`,iconSize:[28,28],iconAnchor:[14,14],className:''});
+    const popup=`<div style="font-size:13px;min-width:160px"><strong>J${d.n} — ${d.to}</strong><br>${d.dt||''}<br><em style="color:#666">${d.tag}</em>${d.sl?'<br><span style="font-size:11px;color:#888">'+d.sl+'</span>':''}</div>`;
+    mks.push(L.marker(pts[i],{icon:ic}).bindPopup(popup).addTo(lmap));
+  });
+  if(pts.length>0)lmap.fitBounds(pts.length>1?pts:[[pts[0][0]-.5,pts[0][1]-.5],[pts[0][0]+.5,pts[0][1]+.5]],{padding:[30,30]});
+}
+
+// ===== HÉBERGEMENTS =====
+function rHb(){
+  let h=`<div class="inf" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px"><span>Prix indicatifs novembre 2026 (saison basse)</span><button class="btn ba2 sm" onclick="addHotel()"><i class="ti ti-plus"></i> Ajouter</button></div>`;
+  S.hotels.forEach((ht,idx)=>{
+    if(S.pendingDel&&S.pendingDel.type==='hotel'&&S.pendingDel.id===idx){
+      h+=`<div class="del-box"><span style="color:#B71C1C;font-size:14px;font-weight:500">Supprimer "${e(ht.stop)}" ?</span><div style="display:flex;gap:6px"><button class="btn br2 sm" onclick="doDel()"><i class="ti ti-trash"></i> Oui</button><button class="btn bo sm" onclick="S.pendingDel=null;rHb()">Annuler</button></div></div>`;return;
+    }
+    h+=`<div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:6px">
+        <div><div style="font-weight:600;font-size:15px">${e(ht.stop)}</div><div style="font-size:12px;color:var(--t2)">${e(ht.n)}</div></div>
+        <div style="display:flex;gap:5px">
+          <button class="btn bo sm" onclick="editHotel(${idx})" style="padding:7px 9px"><i class="ti ti-edit"></i></button>
+          <button class="btn br2 sm" onclick="S.pendingDel={type:'hotel',id:${idx}};S.editHotelIdx=null;rHb()" style="padding:7px 9px"><i class="ti ti-trash"></i></button>
+        </div>
+      </div>
+      <div class="hbox">
+        <div class="hbox-t"><i class="ti ti-building"></i> Hôtel recommandé</div>
+        <div style="font-weight:600;font-size:14px;margin-bottom:2px">${e(ht.h.nm)}</div>
+        <div style="color:var(--p);font-weight:700;font-size:14px;margin-bottom:4px">${e(ht.h.pr)} €<span style="font-size:11px;font-weight:400;color:var(--t2)"> / nuit</span></div>
+        <div style="font-size:12px;color:var(--t2);margin-bottom:8px">${e(ht.h.wh)}</div>
+        <a href="${e(ht.h.lk)}" class="lk" target="_blank">Voir sur Maps <i class="ti ti-external-link" style="font-size:10px"></i></a>
+      </div>
+      <div class="hbox" style="margin-top:8px">
+        <div class="hbox-t"><i class="ti ti-home"></i> Option Airbnb</div>
+        <div style="font-weight:600;font-size:14px;margin-bottom:2px">${e(ht.a.nm)}</div>
+        <div style="color:var(--p);font-weight:700;font-size:14px;margin-bottom:4px">${e(ht.a.pr)} €<span style="font-size:11px;font-weight:400;color:var(--t2)"> / nuit</span></div>
+        <div style="font-size:12px;color:var(--t2);margin-bottom:8px">${e(ht.a.wh)}</div>
+        <a href="${e(ht.a.lk)}" class="lk" target="_blank">Voir Airbnb <i class="ti ti-external-link" style="font-size:10px"></i></a>
+      </div>
+    </div>`;
+  });
+  document.getElementById('s-hb').innerHTML=h;
+}
+function editHotel(idx){
+  const ht=S.hotels[idx];S.editHotelIdx=idx;
+  document.getElementById('ph-b').innerHTML=`
+    <div class="g2">
+      <div><label class="fl">Nom de l'étape</label><input class="fi" id="hs" value="${e(ht.stop)}"></div>
+      <div><label class="fl">Durée</label><input class="fi" id="hn" value="${e(ht.n)}"></div>
+    </div>
+    <div class="hbox" style="margin-top:12px">
+      <div class="hbox-t"><i class="ti ti-building"></i> Hôtel</div>
+      <label class="fl">Nom</label><input class="fi" id="hhn" value="${e(ht.h.nm)}">
+      <label class="fl">Prix / nuit (€)</label><input class="fi" type="number" id="hhp" value="${ht.h.pr}">
+      <label class="fl">Description</label><textarea class="fi" rows="2" id="hhw">${e(ht.h.wh)}</textarea>
+      <label class="fl">Lien URL</label><input class="fi" id="hhl" value="${e(ht.h.lk)}">
+    </div>
+    <div class="hbox" style="margin-top:10px">
+      <div class="hbox-t"><i class="ti ti-home"></i> Airbnb</div>
+      <label class="fl">Nom / Type</label><input class="fi" id="han" value="${e(ht.a.nm)}">
+      <label class="fl">Prix / nuit (€)</label><input class="fi" type="number" id="hap" value="${ht.a.pr}">
+      <label class="fl">Description</label><textarea class="fi" rows="2" id="haw">${e(ht.a.wh)}</textarea>
+      <label class="fl">Lien Airbnb (URL)</label><input class="fi" id="hal" value="${e(ht.a.lk)}">
+    </div>
+  `;
+  op('h');
+}
+function svHotel(){
+  const idx=S.editHotelIdx;if(idx===null||idx===undefined){cp('h');return;}
+  S.hotels[idx]={
+    stop:document.getElementById('hs').value.trim(),n:document.getElementById('hn').value.trim(),
+    h:{nm:document.getElementById('hhn').value.trim(),pr:document.getElementById('hhp').value.trim(),wh:document.getElementById('hhw').value.trim(),lk:document.getElementById('hhl').value.trim()},
+    a:{nm:document.getElementById('han').value.trim(),pr:document.getElementById('hap').value.trim(),wh:document.getElementById('haw').value.trim(),lk:document.getElementById('hal').value.trim()}
+  };
+  S.editHotelIdx=null;save();cp('h');rHb();
+}
+function addHotel(){
+  S.hotels.push({stop:'Nouvelle étape',n:'x nuits',h:{nm:'Nom de l\'hôtel',pr:'80',wh:'Description...',lk:'https://'},a:{nm:'Type Airbnb',pr:'65',wh:'Description...',lk:'https://www.airbnb.fr/'}});
+  editHotel(S.hotels.length-1);
+}
+
+// ===== BUDGET =====
+function rBu(){
+  const items=S.budget;
+  const total=items.reduce((s,i)=>s+(parseFloat(i.val)||0),0);
+  const perPers=Math.round(total/2);
+  document.getElementById('s-bu').innerHTML=`
+  <div class="g2" style="margin-bottom:12px">
+    <div class="mt"><div class="mt-lbl">TOTAL VOYAGE</div><div class="mt-val">${Math.round(total).toLocaleString('fr')} €</div><div class="mt-sub">2 personnes · tout compris</div></div>
+    <div class="mt"><div class="mt-lbl">PAR PERSONNE</div><div class="mt-val">${perPers.toLocaleString('fr')} €</div><div class="mt-sub">vols inclus</div></div>
+  </div>
+  <div class="card">
+    <div style="font-weight:600;font-size:15px;margin-bottom:10px">Détail des postes</div>
+    ${items.map(it=>`
+    <div class="brow">
+      <div class="brow-l">
+        <div class="brow-label"><i class="ti ${it.icon}" style="font-size:14px"></i> ${it.label}</div>
+        <div class="brow-note">${it.note}${it.id==='flights'?' · <a href="#" onclick="event.preventDefault();sw(\'vo\',document.querySelector(\'.nt\'));rVol()" style="color:var(--p)">modifier vol</a>':''}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <input class="brow-input" type="number" value="${Math.round(it.val)}" onchange="updBudget('${it.id}',this.value)" min="0">
+        <span style="font-size:13px;color:var(--t2)">€</span>
+      </div>
+    </div>`).join('')}
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;padding:0 2px">
+    <div style="font-size:13px;color:var(--t2)">1€ ≈ 21-22 MXN · Hors dépenses imprévues</div>
+    <button class="btn bo sm" onclick="resetBudget()"><i class="ti ti-refresh"></i> Réinitialiser</button>
+  </div>
+  `;
+}
+function updBudget(id,val){
+  const item=S.budget.find(b=>b.id===id);
+  if(item){item.val=parseFloat(val)||0;save();
+    const items=S.budget;
+    const total=items.reduce((s,i)=>s+(parseFloat(i.val)||0),0);
+    // Update totals without re-rendering all
+  }
+}
+function resetBudget(){if(confirm('Réinitialiser le budget aux valeurs par défaut ?')){S.budget=JSON.parse(JSON.stringify(DEF_BUDGET));S.budget.find(b=>b.id==='flights').val=(S.flight.pricePP||0)*2;save();rBu();}}
+
+// ===== GASTRONOMIE =====
+function rGa(){
+  document.getElementById('s-ga').innerHTML=GAST.map(g=>`<div class="card"><div style="font-weight:600;font-size:15px;margin-bottom:8px;padding-bottom:6px;border-bottom:.5px solid var(--br)">${g.city}</div>${g.dishes.map(d=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:14px"><i class="ti ti-circle-check" style="font-size:15px;color:var(--p);flex-shrink:0;margin-top:1px"></i><span>${e(d)}</span></div>`).join('')}<div style="background:var(--bg);border-radius:8px;padding:8px;font-size:12px;color:var(--t2);margin-top:8px"><i class="ti ti-map-pin"></i> <strong style="color:var(--tx)">Où manger :</strong> ${e(g.where)}</div></div>`).join('');
+}
+
+// ===== CHECKLIST AVEC CRUD =====
+function rCh(){
+  const cl=S.checklist;
+  let total=0,done=0;
+  cl.forEach(cat=>cat.items.forEach(it=>{total++;if(it.done)done++;}));
+  const pct=total?Math.round(done/total*100):0;
+  let h=`
+  <div class="card" style="margin-bottom:12px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <span style="font-weight:600;font-size:15px">${done}/${total} complété</span>
+      <span style="font-size:15px;font-weight:700;color:${pct===100?'var(--p)':'var(--t2)'}">${pct}%</span>
+    </div>
+    <div class="pbar"><div class="pfill" style="width:${pct}%"></div></div>
+  </div>`;
+  cl.forEach((cat,ci)=>{
+    h+=`<div class="card" style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:2px">
+        <div style="font-weight:600;font-size:15px">${e(cat.cat)}</div>
+        <button class="btn br2 sm" onclick="delChCat(${ci})" style="padding:4px 8px;font-size:12px"><i class="ti ti-trash"></i> Catégorie</button>
+      </div>
+      <div class="sep"></div>`;
+    cat.items.forEach(it=>{
+      h+=`<div class="cr">
+        <input type="checkbox" ${it.done?'checked':''} onchange="togCh(${ci},'${it.id}')">
+        <label class="cr-txt ${it.done?'dk':''}" for="">${e(it.text)}</label>
+        <button class="cr-del" onclick="delChItem(${ci},'${it.id}')"><i class="ti ti-x" style="font-size:16px"></i></button>
+      </div>`;
+    });
+    h+=`<div class="add-row" style="margin-top:8px">
+      <input class="fi" placeholder="Ajouter un item..." id="ni-${ci}" style="padding:8px 12px;font-size:14px" onkeydown="if(event.key==='Enter')addChItem(${ci})">
+      <button class="btn bp sm" onclick="addChItem(${ci})"><i class="ti ti-plus"></i></button>
+    </div></div>`;
+  });
+  h+=`<div class="add-row" style="margin-top:4px">
+    <input class="fi" placeholder="Nouvelle catégorie..." id="new-cat" style="padding:8px 12px;font-size:14px" onkeydown="if(event.key==='Enter')addChCat()">
+    <button class="btn bp" onclick="addChCat()"><i class="ti ti-plus"></i> Catégorie</button>
+  </div>`;
+  document.getElementById('s-ch').innerHTML=h;
+}
+function togCh(ci,id){
+  const item=S.checklist[ci].items.find(x=>x.id===id);
+  if(item){item.done=!item.done;save();rCh();}
+}
+function delChItem(ci,id){
+  S.checklist[ci].items=S.checklist[ci].items.filter(x=>x.id!==id);
+  save();rCh();
+}
+function addChItem(ci){
+  const inp=document.getElementById('ni-'+ci);
+  const txt=inp?inp.value.trim():'';
+  if(!txt)return;
+  S.checklist[ci].items.push({id:uid(),text:txt,done:false});
+  save();rCh();
+  // Refocus
+  setTimeout(()=>{const el=document.getElementById('ni-'+ci);if(el)el.focus();},100);
+}
+function addChCat(){
+  const inp=document.getElementById('new-cat');
+  const txt=inp?inp.value.trim():'';
+  if(!txt)return;
+  S.checklist.push({cat:txt,items:[]});
+  save();rCh();
+}
+function delChCat(ci){
+  if(!confirm('Supprimer la catégorie "'+S.checklist[ci].cat+'" et tous ses items ?'))return;
+  S.checklist.splice(ci,1);save();rCh();
+}
+
+// ===== PRATIQUE =====
+function rPr(){
+  document.getElementById('s-pr').innerHTML=`
+  <div class="warn"><i class="ti ti-alert-triangle"></i> <strong>Règle absolue :</strong> Ne conduisez JAMAIS de nuit au Mexique — animaux errants, topes invisibles, routes non éclairées.</div>
+  ${PRAT.map(p=>`<div class="card" style="margin-bottom:10px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:6px;border-bottom:.5px solid var(--br)"><i class="ti ${p.ic}" style="font-size:20px;color:var(--t2)"></i><span style="font-weight:600;font-size:15px">${p.tl}</span></div>${p.it.map(x=>`<div style="display:flex;gap:8px;align-items:flex-start;padding:4px 0;font-size:14px;color:var(--tx)"><i class="ti ti-arrow-right" style="font-size:12px;flex-shrink:0;margin-top:3px;color:var(--t3)"></i><span>${e(x)}</span></div>`).join('')}</div>`).join('')}
+  <div class="inf" style="font-size:12px">
+    <i class="ti ti-alert-circle"></i>
+    <span><strong>911</strong> Urgences Mexique · <strong>+52 55 9171 9700</strong> Ambassade FR · <strong>+52 999 481 9576</strong> Terra Maya 24h</span>
+  </div>
+  <div style="margin-top:16px;padding:12px;text-align:center;border-radius:12px;background:var(--bg)">
+    <div style="font-size:12px;color:var(--t2);margin-bottom:8px">Données sauvegardées localement sur cet appareil</div>
+    <button class="btn bo" onclick="resetAll()"><i class="ti ti-refresh"></i> Réinitialiser toutes les données</button>
+  </div>
+  `;
+}
+
+// ===== PANELS =====
+function op(t){document.getElementById('p'+t).classList.add('open');document.body.style.overflow='hidden';}
+function cp(t){document.getElementById('p'+t).classList.remove('open');document.body.style.overflow='';S._editMode=null;}
+
+// ===== INIT =====
+function rAll(){
+  recalcDates();
+  rHdr();rTabs();
+  rVol();rIt();rHb();rBu();rGa();rCh();rPr();
+}
+load();rAll();
+</script>
+</body>
+</html>
