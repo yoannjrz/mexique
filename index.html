@@ -531,6 +531,7 @@ function svDay(){
     to:document.getElementById('dd-to').value.trim(),
     from:document.getElementById('dd-fr').value.trim()||null,
     km:parseInt(document.getElementById('dd-km').value)||0,
+    day:document.getElementById('dd-dy').value.trim()||null,
     tag:document.getElementById('dd-tg').value.trim(),
     c:document.getElementById('dd-cl').value,
     lat:parseFloat(document.getElementById('dd-la').value)||20,
@@ -558,7 +559,7 @@ function rIt(){
       <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:8px">
         <div style="display:flex;align-items:center;gap:10px">
           <div style="background:var(--bg);border-radius:10px;padding:5px 10px;text-align:center;min-width:46px;flex-shrink:0">
-            <div style="font-size:17px;font-weight:700;color:var(--p)">J${d.n}</div>
+            <div style="font-size:17px;font-weight:700;color:var(--p)">${e(d.day||'J'+d.n)}</div>
             <div style="font-size:10px;color:var(--t2)">${e(d.dt||'')}</div>
           </div>
           <div>
@@ -589,6 +590,7 @@ function editDay(n){
       <div><label class="fl">Destination</label><input class="fi" id="dd-to" value="${e(d.to)}"></div>
       <div><label class="fl">Depuis</label><input class="fi" id="dd-fr" value="${e(d.from||'')}"></div>
       <div><label class="fl">Distance km</label><input class="fi" type="number" id="dd-km" value="${d.km||0}"></div>
+      <div><label class="fl">Jour(s) affiché</label><input class="fi" id="dd-dy" value="${e(d.day||'J'+d.n)}" placeholder="Ex: J6, J6-J7, 20 nov."></div>
       <div><label class="fl">Étiquette</label><input class="fi" id="dd-tg" value="${e(d.tag)}"></div>
       <div><label class="fl">Couleur</label><select class="fi" id="dd-cl">${COLS.map(c=>`<option value="${c}"${d.c===c?' selected':''}>${c}</option>`).join('')}</select></div>
       <div><label class="fl">Latitude</label><input class="fi" type="number" step="0.001" id="dd-la" value="${d.lat||20}"></div>
@@ -645,11 +647,11 @@ function uMap(){
   S.days.filter(d=>d.lat&&d.lng).forEach((d,i)=>{
     const isFirst=i===0,isLast=i===S.days.length-1;
     const bg=isFirst||isLast?'#D4622A':'#1A6B5C';
-    const ic=L.divIcon({html:`<div style="background:${bg};color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;border:2.5px solid white;box-shadow:0 2px 6px rgba(0,0,0,.35);font-family:sans-serif;">${d.n}</div>`,iconSize:[28,28],iconAnchor:[14,14],className:''});
+    const ic=L.divIcon({html:`<div style="background:${bg};color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:800;border:2.5px solid white;box-shadow:0 2px 6px rgba(0,0,0,.35);font-family:sans-serif;">${d.day||d.n}</div>`,iconSize:[28,28],iconAnchor:[14,14],className:''});
     const legDays=S.days.filter(x=>x.from&&x.km>0&&x.n===d.n);
     let legInfo='';
     if(d.km>0&&d.from)legInfo=`<br><span style="font-size:11px;color:#1A6B5C;font-weight:600">🛣️ ${d.km} km depuis ${d.from}</span>`;
-    const popup=`<div style="font-size:13px;min-width:160px"><strong>J${d.n} — ${d.to}</strong><br>${d.dt||''}<br><em style="color:#666">${d.tag}</em>${legInfo}${d.sl?'<br><span style="font-size:11px;color:#888">'+d.sl+'</span>':''}</div>`;
+    const popup=`<div style="font-size:13px;min-width:160px"><strong>${d.day||'J'+d.n} — ${d.to}</strong><br>${d.dt||''}<br><em style="color:#666">${d.tag}</em>${legInfo}${d.sl?'<br><span style="font-size:11px;color:#888">'+d.sl+'</span>':''}</div>`;
     mks.push(L.marker(pts[i],{icon:ic}).bindPopup(popup).addTo(lmap));
   });
   if(pts.length>0)lmap.fitBounds(pts.length>1?pts:[[pts[0][0]-.5,pts[0][1]-.5],[pts[0][0]+.5,pts[0][1]+.5]],{padding:[30,30]});
@@ -846,7 +848,7 @@ function rRouteList(){
     return`<div class="rt-row" id="rtrow-${d.n}">
       <div class="rt-head">
         <div>
-          <div class="rt-name">J${d.n} — ${e(d.to)}</div>
+          <div class="rt-name">${e(d.day||'J'+d.n)} — ${e(d.to)}</div>
           ${d.dt?`<div class="rt-days">${e(d.dt)}</div>`:''}
         </div>
         <div style="display:flex;gap:5px">
@@ -868,6 +870,10 @@ function rRouteList(){
           <div>
             <label style="font-size:11px;color:var(--t2);display:block;margin-bottom:3px">Depuis (ville départ)</label>
             <input class="rt-fi" id="rte-fr-${d.n}" value="${e(d.from||'')}" placeholder="Ex: Bacalar (vide = sur place)">
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--t2);display:block;margin-bottom:3px">Jour(s) affiché <span style="opacity:.6">· ex: J6, J6-J7</span></label>
+            <input class="rt-fi" id="rte-dy-${d.n}" value="${e(d.day||'J'+d.n)}">
           </div>
         </div>
         <button id="rte-calc-btn-${d.n}" onclick="autoCalcRoute(${d.n})" style="width:100%;background:var(--p);color:white;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px">
@@ -1019,12 +1025,13 @@ function saveRtEdit(n){
   if(idx<0)return;
   const to=document.getElementById('rte-to-'+n)?.value.trim()||S.days[idx].to;
   const fr=document.getElementById('rte-fr-'+n)?.value.trim()||null;
+  const dy=document.getElementById('rte-dy-'+n)?.value.trim()||null;
   const km=parseInt(document.getElementById('rte-km-'+n)?.value)||0;
   const la=parseFloat(document.getElementById('rte-la-'+n)?.value)||S.days[idx].lat;
   const ln=parseFloat(document.getElementById('rte-ln-'+n)?.value)||S.days[idx].lng;
   const pend=S._pending&&S._pending[n];
   const sec=pend?pend.sec:(S.days[idx].sec||0);
-  S.days[idx]={...S.days[idx],to,from:fr||null,km,sec,lat:la,lng:ln};
+  S.days[idx]={...S.days[idx],to,from:fr||null,day:dy,km,sec,lat:la,lng:ln};
   if(S._pending)delete S._pending[n];
   save();rIt();rHdr();uMap();
   setTimeout(()=>{const r=document.getElementById('rtrow-'+n);if(r)r.scrollIntoView({behavior:'smooth',block:'center'});},100);
