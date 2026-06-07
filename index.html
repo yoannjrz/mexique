@@ -849,7 +849,10 @@ function rRouteList(){
           <div class="rt-name">J${d.n} — ${e(d.to)}</div>
           ${d.dt?`<div class="rt-days">${e(d.dt)}</div>`:''}
         </div>
-        <button onclick="toggleRtEdit(${d.n})" style="background:none;border:1.5px solid var(--br);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--t2);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px"><i class="ti ti-edit" style="font-size:13px"></i> Modifier</button>
+        <div style="display:flex;gap:5px">
+          <button onclick="toggleRtEdit(${d.n})" style="background:none;border:1.5px solid var(--br);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--t2);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px"><i class="ti ti-edit" style="font-size:13px"></i> Modifier</button>
+          <button onclick="delDayFromMap(${d.n})" style="background:none;border:1.5px solid var(--br);border-radius:8px;padding:5px 8px;font-size:12px;color:var(--rd);cursor:pointer;font-family:inherit" title="Supprimer"><i class="ti ti-trash" style="font-size:13px"></i></button>
+        </div>
       </div>
       ${hasLeg?`<div class="rt-stats">
         <span class="rt-stat"><i class="ti ti-map-pin" style="font-size:12px"></i>${e(d.from)} →</span>
@@ -896,6 +899,111 @@ function rRouteList(){
       </div>
     </div>`;
   }).join('');
+  listEl.innerHTML += `
+    <div id="rt-add-form" style="background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.07);display:none">
+      <div style="font-weight:600;font-size:14px;margin-bottom:10px;color:var(--p)"><i class="ti ti-plus" style="font-size:13px"></i> Nouvelle étape</div>
+      <div class="rt-edit-grid" style="margin-bottom:8px">
+        <div>
+          <label style="font-size:11px;color:var(--t2);display:block;margin-bottom:3px">Destination</label>
+          <input class="rt-fi" id="new-to" placeholder="Ex: Puerto Morelos">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--t2);display:block;margin-bottom:3px">Depuis (ville départ)</label>
+          <input class="rt-fi" id="new-fr" placeholder="Ex: Cancún (vide = sur place)">
+        </div>
+      </div>
+      <button id="new-calc-btn" onclick="autoCalcNew()" style="width:100%;background:var(--p);color:white;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px">
+        <i class="ti ti-route"></i> Calculer automatiquement
+      </button>
+      <div id="new-msg" style="display:none;border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:8px;font-weight:500"></div>
+      <div class="rt-edit-grid" style="margin-bottom:8px">
+        <div>
+          <label style="font-size:11px;color:var(--t2);display:block;margin-bottom:3px">Distance km</label>
+          <input class="rt-fi" type="number" id="new-km" value="0" min="0">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--t2);display:block;margin-bottom:3px">Durée · calculée auto</label>
+          <input class="rt-fi" id="new-tm" readonly style="background:var(--bg);color:var(--t2)">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--t2);display:block;margin-bottom:3px">Latitude</label>
+          <input class="rt-fi" type="number" step="0.00001" id="new-la" value="20">
+        </div>
+        <div>
+          <label style="font-size:11px;color:var(--t2);display:block;margin-bottom:3px">Longitude</label>
+          <input class="rt-fi" type="number" step="0.00001" id="new-ln" value="-88">
+        </div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button onclick="confirmAddDay()" style="flex:1;background:var(--pd);color:white;border:none;border-radius:8px;padding:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px"><i class="ti ti-check"></i> Ajouter</button>
+        <button onclick="document.getElementById('rt-add-form').style.display='none'" style="background:var(--bg);border:1.5px solid var(--br);color:var(--t2);border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer;font-family:inherit">Annuler</button>
+      </div>
+    </div>
+    <button onclick="document.getElementById('rt-add-form').style.display='block';this.style.display='none';document.getElementById('new-to').focus()" id="rt-add-btn" style="width:100%;background:var(--pl);color:var(--pd);border:none;border-radius:12px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:4px"><i class="ti ti-plus"></i> Ajouter une étape</button>
+  `;
+}
+
+// ===== AJOUT / SUPPRESSION DEPUIS LA CARTE =====
+async function autoCalcNew(){
+  const toVal=document.getElementById('new-to')?.value.trim();
+  const frVal=document.getElementById('new-fr')?.value.trim();
+  const btn=document.getElementById('new-calc-btn');
+  const msgEl=document.getElementById('new-msg');
+  const show=(msg,type)=>{if(!msgEl)return;const colors={info:'var(--pl)',warn:'var(--rl)',ok:'#E8F5E9'};const texts={info:'var(--pd)',warn:'#B71C1C',ok:'#1B5E20'};msgEl.style.display='block';msgEl.style.background=colors[type];msgEl.style.color=texts[type];msgEl.textContent=msg;};
+  if(!toVal){show('Renseignez la destination.','warn');return;}
+  if(btn){btn.disabled=true;btn.innerHTML='<i class="ti ti-loader" style="animation:spin .8s linear infinite;display:inline-block"></i> Calcul...';}
+  show('Géocodage…','info');
+  const destCoord=await geocode(toVal);
+  const fromCoord=frVal?await geocode(frVal):null;
+  if(!destCoord){if(btn){btn.disabled=false;btn.innerHTML='<i class="ti ti-route"></i> Calculer automatiquement';}show('Destination introuvable.','warn');return;}
+  let km=0,sec=0;
+  if(fromCoord){
+    show('Calcul itinéraire…','info');
+    const route=await getRoute(fromCoord,destCoord);
+    if(route){km=route.km;sec=route.sec;}
+  }
+  if(btn){btn.disabled=false;btn.innerHTML='<i class="ti ti-route"></i> Calculer automatiquement';}
+  const kmEl=document.getElementById('new-km');const tmEl=document.getElementById('new-tm');
+  const laEl=document.getElementById('new-la');const lnEl=document.getElementById('new-ln');
+  if(kmEl)kmEl.value=km;
+  if(tmEl)tmEl.value=sec?fmtSec(sec):'—';
+  if(laEl)laEl.value=destCoord.lat.toFixed(5);
+  if(lnEl)lnEl.value=destCoord.lng.toFixed(5);
+  show(km>0?`✅ ${km} km · ${fmtSec(sec)}`:'✅ Coordonnées trouvées (journée sur place)','ok');
+  S._newPend={km,sec,lat:destCoord.lat,lng:destCoord.lng};
+}
+
+function confirmAddDay(){
+  const to=document.getElementById('new-to')?.value.trim();
+  if(!to){document.getElementById('new-msg').style.display='block';document.getElementById('new-msg').textContent='Destination requise.';return;}
+  const fr=document.getElementById('new-fr')?.value.trim()||null;
+  const km=parseInt(document.getElementById('new-km')?.value)||0;
+  const la=parseFloat(document.getElementById('new-la')?.value)||20;
+  const ln=parseFloat(document.getElementById('new-ln')?.value)||-88;
+  const pend=S._newPend||{};
+  const sec=pend.sec||0;
+  const mx=Math.max(...S.days.map(d=>d.n),0);
+  const base=S.flight?parseDate(S.flight.date):new Date('2026-11-15');
+  const dt=new Date(base.getTime());dt.setDate(base.getDate()+mx);
+  S.days.push({n:mx+1,dt:fmtDate(dt),to,from:fr||null,km,sec,lat:la,lng:ln,tag:'Étape',c:'gray',hl:[],ti:[],fd:'',sl:'',lk:[]});
+  S._newPend=null;
+  save();rIt();rHdr();uMap();
+}
+
+function delDayFromMap(n){
+  const day=S.days.find(d=>d.n===n);
+  if(!day||!confirm('Supprimer J'+n+' — '+day.to+' ?'))return;
+  S.days=S.days.filter(d=>d.n!==n);
+  save();rIt();rHdr();uMap();
+}
+
+function addDayFromMap(){
+  const form=document.getElementById('rt-add-form');
+  const btn=document.getElementById('rt-add-btn');
+  if(form)form.style.display='block';
+  if(btn)btn.style.display='none';
+  const inp=document.getElementById('new-to');
+  if(inp)inp.focus();
 }
 
 function toggleRtEdit(n){
