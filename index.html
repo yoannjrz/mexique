@@ -86,7 +86,25 @@ textarea.fi{resize:vertical;min-height:80px;line-height:1.5}
 .fi-help{font-size:11px;color:var(--t3);margin-top:3px}
 .hbox{border:1px solid var(--br);border-radius:12px;padding:12px;margin-top:10px}
 .hbox-t{font-size:13px;font-weight:600;color:var(--t2);margin-bottom:8px;display:flex;align-items:center;gap:6px}
-#lmap{height:360px;border-radius:12px;margin-bottom:6px}
+#lmap{height:300px;border-radius:12px;margin-bottom:6px}
+/* Route map extras */
+.rt-total{flex:1;background:var(--card);border-radius:12px;padding:10px 12px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.rt-tv{font-size:20px;font-weight:800;color:var(--p);line-height:1}
+.rt-tl{font-size:10px;color:var(--t2);text-transform:uppercase;letter-spacing:.06em;margin-top:3px}
+.rt-row{background:var(--card);border-radius:14px;padding:12px 14px;margin-bottom:8px;box-shadow:0 1px 4px rgba(0,0,0,.07)}
+.rt-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px}
+.rt-name{font-weight:600;font-size:15px;flex:1}
+.rt-days{font-size:11px;color:var(--t2)}
+.rt-stats{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.rt-stat{background:var(--pl);border-radius:8px;padding:4px 10px;font-size:12px;font-weight:600;color:var(--pd);display:flex;align-items:center;gap:4px}
+.rt-stat.warn{background:#FFF3E0;color:#E65100}
+.rt-note{font-size:11px;color:var(--t2);margin-top:5px;padding-top:5px;border-top:.5px solid var(--br);font-style:italic}
+@keyframes spin{to{transform:rotate(360deg)}}
+.rt-edit-area{margin-top:8px;padding-top:8px;border-top:.5px solid var(--br);display:none}
+.rt-edit-area.open{display:block}
+.rt-edit-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px}
+.rt-fi{width:100%;font-size:14px;padding:8px 10px;border:1.5px solid var(--br);border-radius:8px;background:var(--bg);color:var(--tx);font-family:inherit;outline:none}
+.rt-fi:focus{border-color:var(--p)}
 /* Add item row */
 .add-row{display:flex;gap:8px;margin-top:10px}
 .add-row .fi{flex:1;padding:9px 12px;font-size:14px}
@@ -109,7 +127,15 @@ textarea.fi{resize:vertical;min-height:80px;line-height:1.5}
   <main id="mn">
     <div id="s-vo" class="sec on"></div>
     <div id="s-it" class="sec"></div>
-    <div id="s-ma" class="sec"><div id="lmap"></div><p style="font-size:11px;color:var(--t3);text-align:center;padding:0 12px">Carte interactive · Cliquez sur un marqueur pour les détails · Mise à jour automatique</p></div>
+    <div id="s-ma" class="sec">
+      <!-- TOTAUX -->
+      <div id="rt-totals" style="display:flex;gap:8px;margin-bottom:10px"></div>
+      <!-- CARTE LEAFLET -->
+      <div id="lmap" style="border-radius:12px;margin-bottom:8px"></div>
+      <p style="font-size:11px;color:var(--t3);text-align:center;padding:0 4px;margin-bottom:10px">Carte interactive · Cliquez sur un marqueur pour les détails</p>
+      <!-- LISTE ÉTAPES ROUTE -->
+      <div id="rt-list"></div>
+    </div>
     <div id="s-hb" class="sec"></div>
     <div id="s-bu" class="sec"></div>
     <div id="s-ga" class="sec"></div>
@@ -617,12 +643,285 @@ function uMap(){
   });
   if(pts.length>1)rLine=L.polyline(pts,{color:'#1A6B5C',weight:3,dashArray:'8,5',opacity:.8}).addTo(lmap);
   S.days.filter(d=>d.lat&&d.lng).forEach((d,i)=>{
-    const ic=L.divIcon({html:`<div style="background:#1A6B5C;color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;border:2.5px solid white;box-shadow:0 2px 6px rgba(0,0,0,.35);font-family:sans-serif;">${d.n}</div>`,iconSize:[28,28],iconAnchor:[14,14],className:''});
-    const popup=`<div style="font-size:13px;min-width:160px"><strong>J${d.n} — ${d.to}</strong><br>${d.dt||''}<br><em style="color:#666">${d.tag}</em>${d.sl?'<br><span style="font-size:11px;color:#888">'+d.sl+'</span>':''}</div>`;
+    const isFirst=i===0,isLast=i===S.days.length-1;
+    const bg=isFirst||isLast?'#D4622A':'#1A6B5C';
+    const ic=L.divIcon({html:`<div style="background:${bg};color:white;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;border:2.5px solid white;box-shadow:0 2px 6px rgba(0,0,0,.35);font-family:sans-serif;">${d.n}</div>`,iconSize:[28,28],iconAnchor:[14,14],className:''});
+    const legDays=S.days.filter(x=>x.from&&x.km>0&&x.n===d.n);
+    let legInfo='';
+    if(d.km>0&&d.from)legInfo=`<br><span style="font-size:11px;color:#1A6B5C;font-weight:600">🛣️ ${d.km} km depuis ${d.from}</span>`;
+    const popup=`<div style="font-size:13px;min-width:160px"><strong>J${d.n} — ${d.to}</strong><br>${d.dt||''}<br><em style="color:#666">${d.tag}</em>${legInfo}${d.sl?'<br><span style="font-size:11px;color:#888">'+d.sl+'</span>':''}</div>`;
     mks.push(L.marker(pts[i],{icon:ic}).bindPopup(popup).addTo(lmap));
   });
   if(pts.length>0)lmap.fitBounds(pts.length>1?pts:[[pts[0][0]-.5,pts[0][1]-.5],[pts[0][0]+.5,pts[0][1]+.5]],{padding:[30,30]});
+  rRouteList();
 }
+
+// ===== ROUTE AUTO (Photon geocoding + OSRM routing) =====
+const _geoCache={};
+const _routeCache={};
+
+// Coordonnées hardcodées pour les villes du circuit (fallback instantané)
+const GEO_DB={
+  // Cancún
+  'cancun':{lat:21.1619,lng:-86.8515},'cancún':{lat:21.1619,lng:-86.8515},'cancun airport':{lat:21.0365,lng:-86.8771},'aeroport cancun':{lat:21.0365,lng:-86.8771},
+  // Côte nord
+  'holbox':{lat:21.5244,lng:-87.3767},'isla holbox':{lat:21.5244,lng:-87.3767},'ile holbox':{lat:21.5244,lng:-87.3767},
+  'chiquila':{lat:21.4447,lng:-87.3308},'chiquilá':{lat:21.4447,lng:-87.3308},'puerto chiquila':{lat:21.4447,lng:-87.3308},
+  'rio lagartos':{lat:21.5951,lng:-88.1577},'río lagartos':{lat:21.5951,lng:-88.1577},'rio lagartos yucatan':{lat:21.5951,lng:-88.1577},
+  'las coloradas':{lat:21.6094,lng:-88.0581},
+  'san felipe':{lat:21.5799,lng:-88.2866},
+  // Riviera Maya
+  'playa del carmen':{lat:20.6296,lng:-87.0739},'playa':{lat:20.6296,lng:-87.0739},
+  'puerto morelos':{lat:20.8490,lng:-86.8780},'puerto morelos quintana roo':{lat:20.8490,lng:-86.8780},
+  'akumal':{lat:20.3954,lng:-87.3149},
+  'tulum':{lat:20.2114,lng:-87.4654},'tulum pueblo':{lat:20.2114,lng:-87.4654},'tulum zone hoteliere':{lat:20.1540,lng:-87.4571},
+  'coba':{lat:20.4900,lng:-87.7292},'cobá':{lat:20.4900,lng:-87.7292},
+  'gran cenote':{lat:20.2376,lng:-87.4683},
+  'cenote dos ojos':{lat:20.2789,lng:-87.4431},
+  'bacalar':{lat:18.6781,lng:-88.3931},'lagune bacalar':{lat:18.6781,lng:-88.3931},'lago bacalar':{lat:18.6781,lng:-88.3931},
+  'chetumal':{lat:18.5001,lng:-88.2963},
+  'mahahual':{lat:18.7127,lng:-87.7058},
+  'xcalak':{lat:18.2756,lng:-87.8334},
+  // Yucatán interior
+  'valladolid':{lat:20.6897,lng:-88.2022},'valladolid yucatan':{lat:20.6897,lng:-88.2022},
+  'ek balam':{lat:20.8683,lng:-88.2561},
+  'merida':{lat:20.9674,lng:-89.5926},'mérida':{lat:20.9674,lng:-89.5926},'merida yucatan':{lat:20.9674,lng:-89.5926},
+  'chichen itza':{lat:20.6843,lng:-88.5678},'chichén itzá':{lat:20.6843,lng:-88.5678},'chichen':{lat:20.6843,lng:-88.5678},
+  'uxmal':{lat:20.3597,lng:-89.7714},
+  'izamal':{lat:20.7307,lng:-89.0161},
+  'homun':{lat:20.7006,lng:-89.1405},'homún':{lat:20.7006,lng:-89.1405},
+  'dzibilchaltun':{lat:21.0960,lng:-89.5960},'dzibilchaltún':{lat:21.0960,lng:-89.5960},
+  'progreso':{lat:21.2835,lng:-89.6647},'progreso yucatan':{lat:21.2835,lng:-89.6647},
+  'celestun':{lat:20.8611,lng:-90.4004},'celestún':{lat:20.8611,lng:-90.4004},
+  'ticul':{lat:20.3967,lng:-89.5344},
+  // Campeche
+  'campeche':{lat:19.8301,lng:-90.5349},'san francisco de campeche':{lat:19.8301,lng:-90.5349},
+  'edzna':{lat:19.5948,lng:-90.2291},'edzná':{lat:19.5948,lng:-90.2291},
+  'hopelchen':{lat:19.7536,lng:-89.8468},'hopelchén':{lat:19.7536,lng:-89.8468},
+  // Sud profond
+  'xpujil':{lat:18.5168,lng:-89.4077},
+  'calakmul':{lat:18.1059,lng:-89.8102},'zona arqueologica calakmul':{lat:18.1059,lng:-89.8102},
+  'balamku':{lat:18.6428,lng:-89.6977},'balamkú':{lat:18.6428,lng:-89.6977},
+  'chicanna':{lat:18.5411,lng:-89.5644},'chicannà':{lat:18.5411,lng:-89.5644},
+  // Quintana Roo nord
+  'felipe carrillo puerto':{lat:19.5783,lng:-88.0453},
+  'jose maria morelos':{lat:19.7535,lng:-88.7139},'josé maría morelos':{lat:19.7535,lng:-88.7139},
+};
+
+function fmtSec(sec){
+  if(!sec||sec<=0)return null;
+  const h=Math.floor(sec/3600),m=Math.round((sec%3600)/60);
+  return h>0?(m>0?`${h}h${String(m).padStart(2,'0')}`:`${h}h`):m+'min';
+}
+function fmtKm(m){return Math.round(m/1000);}
+
+// Geocoding : DB locale → Nominatim → Photon → erreur explicite
+async function geocode(city){
+  if(!city)return null;
+  const k=city.toLowerCase().trim();
+  if(_geoCache[k])return _geoCache[k];
+  // 1. DB locale (instantané)
+  if(GEO_DB[k])return (_geoCache[k]=GEO_DB[k]);
+  // Aussi tester sans accents
+  const kn=k.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  if(GEO_DB[kn])return (_geoCache[k]=GEO_DB[kn]);
+  // 2. Nominatim (fonctionne depuis HTTPS, pas depuis file://)
+  const queries=[
+    `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city+', Yucatan, Mexico')}&format=json&limit=1&countrycodes=mx`,
+    `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(city+', Mexico')}&format=json&limit=1&countrycodes=mx`,
+  ];
+  for(const url of queries){
+    try{
+      const r=await fetch(url,{headers:{'Accept-Language':'es,fr'}});
+      const d=await r.json();
+      if(d&&d[0]){const res={lat:parseFloat(d[0].lat),lng:parseFloat(d[0].lon)};_geoCache[k]=res;return res;}
+    }catch(err){}
+  }
+  // 3. Photon fallback
+  try{
+    const r=await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(city)}&limit=3&lang=fr&bbox=-91,17,-85,22`);
+    const d=await r.json();
+    // Filtrer sur le Mexique (country_code=mx)
+    const f=d&&d.features&&d.features.find(x=>x.properties&&(x.properties.country_code==='mx'||x.properties.country==='Mexico'||x.properties.country==='Mexique'));
+    if(f){const[lng,lat]=f.geometry.coordinates;const res={lat,lng};_geoCache[k]=res;return res;}
+    // Prendre le premier si rien de mieux
+    if(d&&d.features&&d.features[0]){const[lng,lat]=d.features[0].geometry.coordinates;const res={lat,lng};_geoCache[k]=res;return res;}
+  }catch(err){}
+  return null;
+}
+
+async function getRoute(fromCoord,toCoord){
+  const k=`${fromCoord.lat.toFixed(4)},${fromCoord.lng.toFixed(4)}|${toCoord.lat.toFixed(4)},${toCoord.lng.toFixed(4)}`;
+  if(_routeCache[k])return _routeCache[k];
+  // 1. OSRM
+  try{
+    const url=`https://router.project-osrm.org/route/v1/driving/${fromCoord.lng},${fromCoord.lat};${toCoord.lng},${toCoord.lat}?overview=false`;
+    const r=await fetch(url);
+    const d=await r.json();
+    if(d&&d.routes&&d.routes[0]){
+      const res={km:fmtKm(d.routes[0].distance),sec:Math.round(d.routes[0].duration),src:'OSRM'};
+      _routeCache[k]=res;return res;
+    }
+  }catch(err){}
+  // 2. Fallback Haversine (vol d'oiseau × 1.35 pour routes yucatèques)
+  const R=6371;
+  const dLat=(toCoord.lat-fromCoord.lat)*Math.PI/180;
+  const dLng=(toCoord.lng-fromCoord.lng)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2+Math.cos(fromCoord.lat*Math.PI/180)*Math.cos(toCoord.lat*Math.PI/180)*Math.sin(dLng/2)**2;
+  const crow=R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+  const km=Math.round(crow*1.35);
+  const sec=Math.round(km/65*3600);
+  const res={km,sec,src:'estimation'};
+  _routeCache[k]=res;return res;
+}
+
+function setRtLoading(n,loading){
+  const btn=document.getElementById('rte-calc-btn-'+n);
+  if(!btn)return;
+  btn.disabled=loading;
+  btn.innerHTML=loading
+    ?'<i class="ti ti-loader" style="animation:spin .8s linear infinite;display:inline-block"></i> Calcul en cours...'
+    :'<i class="ti ti-route"></i> Calculer automatiquement';
+}
+
+async function autoCalcRoute(n){
+  const idx=S.days.findIndex(d=>d.n===n);
+  if(idx<0)return;
+  const toVal=document.getElementById('rte-to-'+n)?.value.trim();
+  const frVal=document.getElementById('rte-fr-'+n)?.value.trim();
+  if(!frVal){showRtMsg(n,'Renseignez la ville de départ d\'abord.','warn');return;}
+  setRtLoading(n,true);
+  showRtMsg(n,'Géocodage des villes…','info');
+  const [fromCoord,toCoord]=await Promise.all([geocode(frVal),geocode(toVal||S.days[idx].to)]);
+  if(!fromCoord||!toCoord){
+    setRtLoading(n,false);
+    showRtMsg(n,'Ville introuvable. Vérifiez l\'orthographe (ex: Merida, Tulum…).','warn');return;
+  }
+  showRtMsg(n,'Calcul de l\'itinéraire routier…','info');
+  const route=await getRoute(fromCoord,toCoord);
+  setRtLoading(n,false);
+  if(!route){showRtMsg(n,'Impossible de calculer l\'itinéraire. Réessayez.','warn');return;}
+  const kmEl=document.getElementById('rte-km-'+n);
+  const tmEl=document.getElementById('rte-tm-'+n);
+  const laEl=document.getElementById('rte-la-'+n);
+  const lnEl=document.getElementById('rte-ln-'+n);
+  if(kmEl)kmEl.value=route.km;
+  if(tmEl)tmEl.value=fmtSec(route.sec);
+  if(laEl)laEl.value=toCoord.lat.toFixed(5);
+  if(lnEl)lnEl.value=toCoord.lng.toFixed(5);
+  S._pending=S._pending||{};
+  S._pending[n]={km:route.km,sec:route.sec,lat:toCoord.lat,lng:toCoord.lng};
+  showRtMsg(n,`✅ ${route.km} km · ${fmtSec(route.sec)}${route.src==='estimation'?' (estimation vol d\'oiseau ×1.35)':' · OSRM'}`,'ok');
+}
+
+function showRtMsg(n,msg,type){
+  const el=document.getElementById('rte-msg-'+n);
+  if(!el)return;
+  const colors={info:'var(--pl)',warn:'var(--rl)',ok:'#E8F5E9'};
+  const texts={info:'var(--pd)',warn:'#B71C1C',ok:'#1B5E20'};
+  el.style.display='block';
+  el.style.background=colors[type]||colors.info;
+  el.style.color=texts[type]||texts.info;
+  el.textContent=msg;
+}
+
+function rRouteList(){
+  const totalKm=S.days.reduce((s,d)=>s+(d.km||0),0);
+  const totalSec=S.days.reduce((s,d)=>s+(d.sec||0),0);
+  const th=Math.floor(totalSec/3600),tm=Math.round((totalSec%3600)/60);
+  const totalTime=totalSec>0?(th>0?(tm>0?`${th}h${String(tm).padStart(2,'0')}`:`${th}h`):tm+'min'):'—';
+  const drivingDays=S.days.filter(d=>d.km>0).length;
+  const totEl=document.getElementById('rt-totals');
+  if(totEl)totEl.innerHTML=`
+    <div class="rt-total"><div class="rt-tv">${totalKm.toLocaleString('fr')} km</div><div class="rt-tl">Distance totale</div></div>
+    <div class="rt-total"><div class="rt-tv">${totalTime}</div><div class="rt-tl">Route totale</div></div>
+    <div class="rt-total"><div class="rt-tv">${drivingDays}</div><div class="rt-tl">Jours de route</div></div>
+  `;
+  const listEl=document.getElementById('rt-list');
+  if(!listEl)return;
+  listEl.innerHTML=S.days.map((d,i)=>{
+    const hasLeg=d.km>0&&d.from;
+    const warn=d.km>=200;
+    const timeStr=fmtSec(d.sec);
+    return`<div class="rt-row" id="rtrow-${d.n}">
+      <div class="rt-head">
+        <div>
+          <div class="rt-name">J${d.n} — ${e(d.to)}</div>
+          ${d.dt?`<div class="rt-days">${e(d.dt)}</div>`:''}
+        </div>
+        <button onclick="toggleRtEdit(${d.n})" style="background:none;border:1.5px solid var(--br);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--t2);cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:4px"><i class="ti ti-edit" style="font-size:13px"></i> Modifier</button>
+      </div>
+      ${hasLeg?`<div class="rt-stats">
+        <span class="rt-stat"><i class="ti ti-map-pin" style="font-size:12px"></i>${e(d.from)} →</span>
+        <span class="rt-stat${warn?' warn':''}"><i class="ti ti-road" style="font-size:12px"></i>${d.km} km</span>
+        ${timeStr?`<span class="rt-stat"><i class="ti ti-clock" style="font-size:12px"></i>${timeStr}</span>`:''}
+      </div>`:`<div style="font-size:12px;color:var(--t3);font-style:italic">${i===0?'✈️ Arrivée · départ du circuit':'Journée sur place'}</div>`}
+      <div class="rt-edit-area" id="rtedit-${d.n}">
+        <div class="rt-edit-grid" style="margin-bottom:8px">
+          <div>
+            <label style="font-size:11px;color:var(--t2);display:block;margin-bottom:3px">Destination</label>
+            <input class="rt-fi" id="rte-to-${d.n}" value="${e(d.to)}" placeholder="Ex: Tulum">
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--t2);display:block;margin-bottom:3px">Depuis (ville départ)</label>
+            <input class="rt-fi" id="rte-fr-${d.n}" value="${e(d.from||'')}" placeholder="Ex: Bacalar (vide = sur place)">
+          </div>
+        </div>
+        <button id="rte-calc-btn-${d.n}" onclick="autoCalcRoute(${d.n})" style="width:100%;background:var(--p);color:white;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;margin-bottom:8px">
+          <i class="ti ti-route"></i> Calculer automatiquement
+        </button>
+        <div id="rte-msg-${d.n}" style="display:none;border-radius:8px;padding:8px 10px;font-size:13px;margin-bottom:8px;font-weight:500"></div>
+        <div class="rt-edit-grid" style="margin-bottom:8px">
+          <div>
+            <label style="font-size:11px;color:var(--t2);display:block;margin-bottom:3px">Distance km <span style="opacity:.6">· modifiable</span></label>
+            <input class="rt-fi" type="number" id="rte-km-${d.n}" value="${d.km||0}" min="0">
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--t2);display:block;margin-bottom:3px">Durée <span style="opacity:.6">· calculée auto</span></label>
+            <input class="rt-fi" id="rte-tm-${d.n}" value="${d.sec?fmtSec(d.sec):''}" readonly style="background:var(--bg);color:var(--t2)">
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--t2);display:block;margin-bottom:3px">Latitude</label>
+            <input class="rt-fi" type="number" step="0.00001" id="rte-la-${d.n}" value="${d.lat||20}">
+          </div>
+          <div>
+            <label style="font-size:11px;color:var(--t2);display:block;margin-bottom:3px">Longitude</label>
+            <input class="rt-fi" type="number" step="0.00001" id="rte-ln-${d.n}" value="${d.lng||-88}">
+          </div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button onclick="saveRtEdit(${d.n})" style="flex:1;background:var(--pd);color:white;border:none;border-radius:8px;padding:9px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px"><i class="ti ti-check"></i> Enregistrer</button>
+          <button onclick="toggleRtEdit(${d.n})" style="background:var(--bg);border:1.5px solid var(--br);color:var(--t2);border-radius:8px;padding:9px 14px;font-size:14px;cursor:pointer;font-family:inherit">Annuler</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleRtEdit(n){
+  const el=document.getElementById('rtedit-'+n);
+  if(!el)return;
+  const open=el.classList.contains('open');
+  document.querySelectorAll('.rt-edit-area.open').forEach(x=>x.classList.remove('open'));
+  if(!open)el.classList.add('open');
+}
+
+function saveRtEdit(n){
+  const idx=S.days.findIndex(d=>d.n===n);
+  if(idx<0)return;
+  const to=document.getElementById('rte-to-'+n)?.value.trim()||S.days[idx].to;
+  const fr=document.getElementById('rte-fr-'+n)?.value.trim()||null;
+  const km=parseInt(document.getElementById('rte-km-'+n)?.value)||0;
+  const la=parseFloat(document.getElementById('rte-la-'+n)?.value)||S.days[idx].lat;
+  const ln=parseFloat(document.getElementById('rte-ln-'+n)?.value)||S.days[idx].lng;
+  const pend=S._pending&&S._pending[n];
+  const sec=pend?pend.sec:(S.days[idx].sec||0);
+  S.days[idx]={...S.days[idx],to,from:fr||null,km,sec,lat:la,lng:ln};
+  if(S._pending)delete S._pending[n];
+  save();rIt();rHdr();uMap();
+  setTimeout(()=>{const r=document.getElementById('rtrow-'+n);if(r)r.scrollIntoView({behavior:'smooth',block:'center'});},100);
+}
+
 
 // ===== HÉBERGEMENTS =====
 function rHb(){
